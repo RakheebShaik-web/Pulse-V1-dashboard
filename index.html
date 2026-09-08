@@ -138,7 +138,7 @@
             border-bottom: 1px solid var(--border);
         }
 
-th {
+        th {
             font-weight: 500;
             color: var(--text-muted);
             font-size: 12px;
@@ -180,6 +180,11 @@ th {
             border: 1px solid var(--border);
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .controls {
             margin-bottom: 24px;
         }
@@ -214,9 +219,79 @@ th {
             font-size: 12px;
             color: var(--text-muted);
         }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            width: 400px;
+            max-width: 90%;
+        }
+
+        .login-box h2 {
+            margin-bottom: 16px;
+            font-size: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .login-box .btn {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .login-error {
+            color: var(--danger);
+            font-size: 13px;
+            margin-bottom: 8px;
+            display: none;
+        }
+
+        .api-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body>
+    <div id="login-overlay" class="login-overlay" style="display: none;">
+        <div class="login-box">
+            <h2>🔐 Admin Access</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Enter your admin API key to access the dashboard.</p>
+            <input type="password" id="api-key-input" placeholder="Admin API Key" autofocus>
+            <div id="login-error" class="login-error">Invalid API key</div>
+            <button class="btn btn-primary" onclick="login()">Login</button>
+            <p class="api-status">Contact your administrator for access.</p>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <div>
@@ -227,14 +302,15 @@ th {
                 <span id="market-clock" class="clock">--:--:--</span>
                 <span id="status-badge" class="status-badge status-stopped">Stopped</span>
                 <button class="refresh-btn" onclick="loadAll()">Refresh</button>
+                <button class="refresh-btn" onclick="logout()">Logout</button>
             </div>
         </header>
 
         <div class="controls">
-            <button class="btn btn-primary" onclick="startTrading()">Start</button>
-            <button class="btn btn-danger" onclick="stopTrading()">Stop</button>
-            <button class="btn btn-secondary" onclick="closeAll()">Close All</button>
-            <button class="btn btn-secondary" onclick="cancelAll()">Cancel Orders</button>
+            <button class="btn btn-primary" id="btn-start" onclick="startTrading()">Start</button>
+            <button class="btn btn-danger" id="btn-stop" onclick="stopTrading()">Stop</button>
+            <button class="btn btn-secondary" id="btn-close" onclick="closeAll()">Close All</button>
+            <button class="btn btn-secondary" id="btn-cancel" onclick="cancelAll()">Cancel Orders</button>
         </div>
 
         <div class="grid" id="metrics-grid">
@@ -347,10 +423,24 @@ th {
 
     <script>
         const API_URL = localStorage.getItem('api_url') || 'https://alpaca-pulse-v1.onrender.com';
+        let adminKey = localStorage.getItem('admin_key') || null;
+
+        // Check if we need to show login
+        if (!adminKey) {
+            document.getElementById('login-overlay').style.display = 'flex';
+        }
 
         async function apiGet(endpoint) {
             try {
-                const resp = await fetch(`${API_URL}${endpoint}`);
+                const headers = {};
+                if (adminKey) {
+                    headers['Authorization'] = `Bearer ${adminKey}`;
+                }
+                const resp = await fetch(`${API_URL}${endpoint}`, { headers });
+                if (resp.status === 401) {
+                    logout();
+                    return null;
+                }
                 return await resp.json();
             } catch (e) {
                 console.error('API error:', e);
@@ -360,13 +450,45 @@ th {
 
         async function apiPost(endpoint) {
             try {
-                const resp = await fetch(`${API_URL}${endpoint}`, { method: 'POST' });
+                const headers = {};
+                if (adminKey) {
+                    headers['Authorization'] = `Bearer ${adminKey}`;
+                }
+                const resp = await fetch(`${API_URL}${endpoint}`, { method: 'POST', headers });
+                if (resp.status === 401) {
+                    logout();
+                    return null;
+                }
                 return await resp.json();
             } catch (e) {
                 console.error('API error:', e);
                 return null;
             }
         }
+
+        function login() {
+            const key = document.getElementById('api-key-input').value.trim();
+            if (key) {
+                adminKey = key;
+                localStorage.setItem('admin_key', key);
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('login-error').style.display = 'none';
+                loadAll();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            adminKey = null;
+            localStorage.removeItem('admin_key');
+            document.getElementById('login-overlay').style.display = 'flex';
+        }
+
+        // Allow Enter key to login
+        document.getElementById('api-key-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
 
         function formatCurrency(val) {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
