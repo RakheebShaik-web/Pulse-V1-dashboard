@@ -24,25 +24,94 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #1a1a1a;
             line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .card-value {
+                font-size: 22px;
+            }
+            
+            .controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .btn {
+                flex: 1;
+                min-width: 80px;
+                text-align: center;
+                margin-right: 0;
+            }
+            
+            table {
+                font-size: 13px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 24px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         h1 {
@@ -237,7 +306,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -245,36 +315,62 @@
         }
 
         .login-box {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
             padding: 32px;
             width: 400px;
             max-width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .login-box h2 {
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             font-size: 20px;
+            font-weight: 600;
         }
 
-        .login-box input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 14px;
+        .password-wrapper {
+            position: relative;
             margin-bottom: 12px;
         }
 
-        .login-box input:focus {
-            outline: none;
-            border-color: var(--accent);
+        .password-wrapper input {
+            width: 100%;
+            padding: 12px 40px 12px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
         }
 
-        .login-box .btn {
-            width: 100%;
-            margin-top: 8px;
+        .password-wrapper input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+
+        .eye-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .eye-btn:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .login-box {
+                width: 90%;
+                padding: 24px;
+            }
         }
 
         .login-error {
@@ -311,8 +407,11 @@
     <div id="login-overlay" class="login-overlay">
         <div class="login-box">
             <h2>🔐 Admin Login</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Enter admin password to access controls.</p>
-            <input type="password" id="admin-password" placeholder="Admin Password" autofocus>
+            <p style="color: #666; font-size: 14px; margin-bottom: 16px;">Enter admin password to access controls.</p>
+            <div class="password-wrapper">
+                <input type="password" id="admin-password" placeholder="Admin Password" autofocus>
+                <button class="eye-btn" onclick="togglePassword()" aria-label="Show password">👁</button>
+            </div>
             <div id="login-error" class="login-error">Invalid password</div>
             <button class="btn btn-primary" onclick="adminLogin()">Login</button>
             <button class="btn btn-secondary" onclick="closeLogin()" style="margin-top: 8px;">Cancel</button>
@@ -321,11 +420,11 @@
 
     <div class="container">
         <header>
-            <div>
+            <div class="header-left">
                 <h1>Pulse V1</h1>
                 <p class="subtitle">Automated Trading System</p>
             </div>
-            <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="header-right">
                 <span id="market-clock" class="clock">--:--:--</span>
                 <span id="status-badge" class="status-badge status-stopped">Stopped</span>
                 <button class="refresh-btn" onclick="loadAll()">Refresh</button>
@@ -463,6 +562,15 @@
         function closeLogin() {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('login-error').style.display = 'none';
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('admin-password');
+            if (input.type === 'password') {
+                input.type = 'text';
+            } else {
+                input.type = 'password';
+            }
         }
 
         function adminLogin() {
