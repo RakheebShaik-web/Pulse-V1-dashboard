@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pulse V1 - Trading Dashboard</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --surface: #f8f9fa;
+            --border: #e9ecef;
+            --text: #212529;
+            --text-muted: #6c757d;
+            --accent: #0d6efd;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-running {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-stopped {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-paper {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .card-value.positive {
+            color: var(--success);
+        }
+
+        .card-value.negative {
+            color: var(--danger);
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+th {
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .pnl-positive {
+            color: var(--success);
+        }
+
+        .pnl-negative {
+            color: var(--danger);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .controls {
+            margin-bottom: 24px;
+        }
+
+        .clock {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .setup-long {
+            color: var(--success);
+        }
+
+        .setup-short {
+            color: var(--danger);
+        }
+
+        .refresh-btn {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .refresh-btn:hover {
+            background: var(--surface);
+        }
+
+        #last-updated {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Pulse V1</h1>
+                <p class="subtitle">Automated Trading System</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span id="market-clock" class="clock">--:--:--</span>
+                <span id="status-badge" class="status-badge status-stopped">Stopped</span>
+                <button class="refresh-btn" onclick="loadAll()">Refresh</button>
+            </div>
+        </header>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="startTrading()">Start</button>
+            <button class="btn btn-danger" onclick="stopTrading()">Stop</button>
+            <button class="btn btn-secondary" onclick="closeAll()">Close All</button>
+            <button class="btn btn-secondary" onclick="cancelAll()">Cancel Orders</button>
+        </div>
+
+        <div class="grid" id="metrics-grid">
+            <div class="card">
+                <div class="card-label">Portfolio Value</div>
+                <div class="card-value" id="portfolio-value">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Buying Power</div>
+                <div class="card-value" id="buying-power">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Daily PnL</div>
+                <div class="card-value" id="daily-pnl">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Active Positions</div>
+                <div class="card-value" id="active-positions">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Total Trades</div>
+                <div class="card-value" id="total-trades">--</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Mode</div>
+                <div class="card-value" id="mode" style="font-size: 18px;">--</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Active Positions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Side</th>
+                        <th>Entry</th>
+                        <th>Current</th>
+                        <th>Size</th>
+                        <th>PnL</th>
+                        <th>PnL %</th>
+                    </tr>
+                </thead>
+                <tbody id="positions-body">
+                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No active positions</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Pre-Market Scan</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Direction</th>
+                        <th>Gap %</th>
+                        <th>Volume</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="scan-body">
+                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No setups found</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Trade History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Side</th>
+                        <th>Entry</th>
+                        <th>Exit</th>
+                        <th>Size</th>
+                        <th>PnL</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody id="trades-body">
+                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Daily Statistics</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Trades</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                        <th>Win Rate</th>
+                        <th>PnL</th>
+                        <th>Portfolio</th>
+                    </tr>
+                </thead>
+                <tbody id="daily-body">
+                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No data available</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p id="last-updated">Last updated: --</p>
+    </div>
+
+    <script>
+        const API_URL = localStorage.getItem('api_url') || 'http://localhost:8000';
+
+        async function apiGet(endpoint) {
+            try {
+                const resp = await fetch(`${API_URL}${endpoint}`);
+                return await resp.json();
+            } catch (e) {
+                console.error('API error:', e);
+                return null;
+            }
+        }
+
+        async function apiPost(endpoint) {
+            try {
+                const resp = await fetch(`${API_URL}${endpoint}`, { method: 'POST' });
+                return await resp.json();
+            } catch (e) {
+                console.error('API error:', e);
+                return null;
+            }
+        }
+
+        function formatCurrency(val) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+        }
+
+        function formatPercent(val) {
+            return (val * 100).toFixed(2) + '%';
+        }
+
+        function formatTime(iso) {
+            if (!iso) return '--';
+            return new Date(iso).toLocaleString();
+        }
+
+        async function loadStatus() {
+            const data = await apiGet('/api/status');
+            if (!data) return;
+
+            document.getElementById('status-badge').textContent = data.status;
+            document.getElementById('status-badge').className = `status-badge status-${data.status}`;
+            document.getElementById('portfolio-value').textContent = formatCurrency(data.portfolio_value);
+            document.getElementById('buying-power').textContent = formatCurrency(data.buying_power);
+            
+            const dailyPnl = document.getElementById('daily-pnl');
+            dailyPnl.textContent = formatCurrency(data.daily_pnl);
+            dailyPnl.className = `card-value ${data.daily_pnl >= 0 ? 'positive' : 'negative'}`;
+            
+            document.getElementById('active-positions').textContent = data.active_positions;
+            document.getElementById('total-trades').textContent = data.total_trades;
+            document.getElementById('mode').textContent = data.mode.toUpperCase();
+        }
+
+        async function loadPositions() {
+            const data = await apiGet('/api/positions');
+            const tbody = document.getElementById('positions-body');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No active positions</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(p => `
+                <tr>
+                    <td><strong>${p.symbol}</strong></td>
+                    <td>${p.side}</td>
+                    <td>${formatCurrency(p.entry)}</td>
+                    <td>${formatCurrency(p.current_price)}</td>
+                    <td>${p.size}</td>
+                    <td class="${p.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(p.pnl)}</td>
+                    <td class="${p.pnl_pct >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatPercent(p.pnl_pct)}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadScan() {
+            const data = await apiGet('/api/scan');
+            const tbody = document.getElementById('scan-body');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No setups found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(s => `
+                <tr>
+                    <td><strong>${s.symbol}</strong></td>
+                    <td class="${s.direction === 'long' ? 'setup-long' : 'setup-short'}">${s.direction.toUpperCase()}</td>
+                    <td>${formatPercent(s.gap_pct)}</td>
+                    <td>${s.pm_volume.toLocaleString()}</td>
+                    <td>${s.score.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadTrades() {
+            const data = await apiGet('/api/trades');
+            const tbody = document.getElementById('trades-body');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(t => `
+                <tr>
+                    <td><strong>${t.symbol}</strong></td>
+                    <td>${t.side}</td>
+                    <td>${formatCurrency(t.entry)}</td>
+                    <td>${formatCurrency(t.exit_price)}</td>
+                    <td>${t.size}</td>
+                    <td class="${t.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(t.pnl)}</td>
+                    <td>${formatTime(t.exit_time)}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadDaily() {
+            const data = await apiGet('/api/daily');
+            const tbody = document.getElementById('daily-body');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No data available</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(d => `
+                <tr>
+                    <td>${d.date}</td>
+                    <td>${d.trades}</td>
+                    <td>${d.wins}</td>
+                    <td>${d.losses}</td>
+                    <td>${formatPercent(d.win_rate)}</td>
+                    <td class="${d.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(d.pnl)}</td>
+                    <td>${formatCurrency(d.portfolio)}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadClock() {
+            const data = await apiGet('/api/clock');
+            if (!data) return;
+            
+            const clock = document.getElementById('market-clock');
+            const isOpen = data.is_open ? 'Open' : 'Closed';
+            clock.textContent = `Market: ${isOpen}`;
+        }
+
+        async function startTrading() {
+            await apiPost('/api/start');
+            loadAll();
+        }
+
+        async function stopTrading() {
+            await apiPost('/api/stop');
+            loadAll();
+        }
+
+        async function closeAll() {
+            await apiPost('/api/close-all');
+            loadAll();
+        }
+
+        async function cancelAll() {
+            await apiPost('/api/cancel-all');
+            loadAll();
+        }
+
+        async function loadAll() {
+            await Promise.all([
+                loadStatus(),
+                loadPositions(),
+                loadScan(),
+                loadTrades(),
+                loadDaily(),
+                loadClock(),
+            ]);
+            document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(loadAll, 30000);
+
+        // Initial load
+        loadAll();
+    </script>
+</body>
+</html>
