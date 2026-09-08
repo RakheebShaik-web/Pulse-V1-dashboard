@@ -6,28 +6,39 @@ Trading dashboard for the Pulse V1 automated trading system.
 
 ```bash
 pip install -r requirements.txt
-```
-
-## Run
-
-```bash
 streamlit run dashboard.py
 ```
 
+## Deploy to Vercel
+
+This is a static HTML dashboard — no build step needed.
+
+1. Go to [vercel.com](https://vercel.com) → New Project
+2. Import `RakheebShaik-web/Pulse-V1-dashboard`
+3. Framework: **Other**
+4. Deploy
+
 ## Configuration
 
-Set the API URL (default: `http://localhost:8000`):
+The dashboard connects to the backend API. Set the backend URL in `index.html`:
 
-```bash
-export API_URL=http://localhost:8000
+```javascript
+const API_URL = 'https://your-backend.onrender.com';
 ```
+
+Or set via environment variable `API_URL`.
 
 ## Features
 
 - Real-time portfolio metrics
-- Active positions & PnL
+- Active positions with live P&L
 - Trade history
 - Daily statistics
 - Pre-market scan results
 - Market clock
-- Start/stop trading controls
+- Start/stop/close controls
+- Auto-refresh every 30 seconds
+
+## Backend
+
+See [Alpaca-Pulse-V1](https://github.com/RakheebShaik-web/Alpaca-Pulse-V1) for the trading system backend.
