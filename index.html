@@ -187,6 +187,17 @@
 
         .controls {
             margin-bottom: 24px;
+            padding: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .controls-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
         }
 
         .clock {
@@ -226,15 +237,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg);
-            display: flex;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
 
         .login-box {
-            background: var(--surface);
+            background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 32px;
@@ -273,6 +284,22 @@
             display: none;
         }
 
+        .admin-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: var(--accent);
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
         .api-status {
             font-size: 12px;
             color: var(--text-muted);
@@ -281,14 +308,14 @@
     </style>
 </head>
 <body>
-    <div id="login-overlay" class="login-overlay" style="display: none;">
+    <div id="login-overlay" class="login-overlay">
         <div class="login-box">
-            <h2>🔐 Admin Access</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Enter your admin API key to access the dashboard.</p>
-            <input type="password" id="api-key-input" placeholder="Admin API Key" autofocus>
-            <div id="login-error" class="login-error">Invalid API key</div>
-            <button class="btn btn-primary" onclick="login()">Login</button>
-            <p class="api-status">Contact your administrator for access.</p>
+            <h2>🔐 Admin Login</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;">Enter admin password to access controls.</p>
+            <input type="password" id="admin-password" placeholder="Admin Password" autofocus>
+            <div id="login-error" class="login-error">Invalid password</div>
+            <button class="btn btn-primary" onclick="adminLogin()">Login</button>
+            <button class="btn btn-secondary" onclick="closeLogin()" style="margin-top: 8px;">Cancel</button>
         </div>
     </div>
 
@@ -302,15 +329,19 @@
                 <span id="market-clock" class="clock">--:--:--</span>
                 <span id="status-badge" class="status-badge status-stopped">Stopped</span>
                 <button class="refresh-btn" onclick="loadAll()">Refresh</button>
-                <button class="refresh-btn" onclick="logout()">Logout</button>
+                <span id="admin-badge" class="admin-badge" style="display: none;">ADMIN</span>
+                <button class="refresh-btn" id="admin-btn" onclick="openLogin()">Admin Login</button>
+                <button class="refresh-btn" id="logout-btn" onclick="adminLogout()" style="display: none;">Logout</button>
             </div>
         </header>
 
-        <div class="controls">
-            <button class="btn btn-primary" id="btn-start" onclick="startTrading()">Start</button>
-            <button class="btn btn-danger" id="btn-stop" onclick="stopTrading()">Stop</button>
-            <button class="btn btn-secondary" id="btn-close" onclick="closeAll()">Close All</button>
-            <button class="btn btn-secondary" id="btn-cancel" onclick="cancelAll()">Cancel Orders</button>
+        <!-- Admin Controls (hidden by default) -->
+        <div class="controls" id="admin-controls" style="display: none;">
+            <div class="controls-title">⚡ Admin Controls</div>
+            <button class="btn btn-primary" onclick="startTrading()">Start</button>
+            <button class="btn btn-danger" onclick="stopTrading()">Stop</button>
+            <button class="btn btn-secondary" onclick="closeAll()">Close All</button>
+            <button class="btn btn-secondary" onclick="cancelAll()">Cancel Orders</button>
         </div>
 
         <div class="grid" id="metrics-grid">
@@ -425,10 +456,56 @@
         const API_URL = localStorage.getItem('api_url') || 'https://alpaca-pulse-v1.onrender.com';
         let adminKey = localStorage.getItem('admin_key') || null;
 
-        // Check if we need to show login
-        if (!adminKey) {
+        function openLogin() {
             document.getElementById('login-overlay').style.display = 'flex';
         }
+
+        function closeLogin() {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('login-error').style.display = 'none';
+        }
+
+        function adminLogin() {
+            const password = document.getElementById('admin-password').value.trim();
+            if (password) {
+                adminKey = password;
+                localStorage.setItem('admin_key', password);
+                closeLogin();
+                showAdminControls();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+            }
+        }
+
+        function adminLogout() {
+            adminKey = null;
+            localStorage.removeItem('admin_key');
+            hideAdminControls();
+        }
+
+        function showAdminControls() {
+            document.getElementById('admin-controls').style.display = 'block';
+            document.getElementById('admin-badge').style.display = 'inline-block';
+            document.getElementById('admin-btn').style.display = 'none';
+            document.getElementById('logout-btn').style.display = 'inline-block';
+        }
+
+        function hideAdminControls() {
+            document.getElementById('admin-controls').style.display = 'none';
+            document.getElementById('admin-badge').style.display = 'none';
+            document.getElementById('admin-btn').style.display = 'inline-block';
+            document.getElementById('logout-btn').style.display = 'none';
+        }
+
+        // Check if already logged in
+        if (adminKey) {
+            showAdminControls();
+        }
+
+        // Allow Enter key to login
+        document.getElementById('admin-password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') adminLogin();
+        });
 
         async function apiGet(endpoint) {
             try {
@@ -438,7 +515,7 @@
                 }
                 const resp = await fetch(`${API_URL}${endpoint}`, { headers });
                 if (resp.status === 401) {
-                    logout();
+                    adminLogout();
                     return null;
                 }
                 return await resp.json();
@@ -456,7 +533,8 @@
                 }
                 const resp = await fetch(`${API_URL}${endpoint}`, { method: 'POST', headers });
                 if (resp.status === 401) {
-                    logout();
+                    alert('Unauthorized: Please login as admin');
+                    adminLogout();
                     return null;
                 }
                 return await resp.json();
@@ -465,30 +543,6 @@
                 return null;
             }
         }
-
-        function login() {
-            const key = document.getElementById('api-key-input').value.trim();
-            if (key) {
-                adminKey = key;
-                localStorage.setItem('admin_key', key);
-                document.getElementById('login-overlay').style.display = 'none';
-                document.getElementById('login-error').style.display = 'none';
-                loadAll();
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
-        }
-
-        function logout() {
-            adminKey = null;
-            localStorage.removeItem('admin_key');
-            document.getElementById('login-overlay').style.display = 'flex';
-        }
-
-        // Allow Enter key to login
-        document.getElementById('api-key-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') login();
-        });
 
         function formatCurrency(val) {
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
@@ -617,21 +671,25 @@
         }
 
         async function startTrading() {
+            if (!confirm('Start trading?')) return;
             await apiPost('/api/start');
             loadAll();
         }
 
         async function stopTrading() {
+            if (!confirm('Stop trading?')) return;
             await apiPost('/api/stop');
             loadAll();
         }
 
         async function closeAll() {
+            if (!confirm('Close all positions?')) return;
             await apiPost('/api/close-all');
             loadAll();
         }
 
         async function cancelAll() {
+            if (!confirm('Cancel all orders?')) return;
             await apiPost('/api/cancel-all');
             loadAll();
         }
