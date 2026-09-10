@@ -44,7 +44,6 @@
             padding: 16px;
         }
 
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -126,13 +125,13 @@
         }
 
         .btn {
-            padding: 6px 12px;
+            padding: 5px 11px;
             border: 1px solid var(--border);
             border-radius: 4px;
             background: var(--surface);
             color: var(--text);
             font-family: inherit;
-            font-size: 11px;
+            font-size: 10px;
             cursor: pointer;
             transition: all 0.15s;
             white-space: nowrap;
@@ -168,7 +167,6 @@
             color: white;
         }
 
-        /* Metrics Grid */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -229,7 +227,6 @@
             margin-top: 2px;
         }
 
-        /* Admin Panel */
         .admin-panel {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -261,7 +258,6 @@
             text-align: center;
         }
 
-        /* Tables */
         .section {
             margin-bottom: 20px;
         }
@@ -325,13 +321,8 @@
             background: var(--surface-hover);
         }
 
-        .pnl-positive {
-            color: var(--success);
-        }
-
-        .pnl-negative {
-            color: var(--danger);
-        }
+        .pnl-positive { color: var(--success); }
+        .pnl-negative { color: var(--danger); }
 
         .empty-state {
             padding: 24px;
@@ -340,7 +331,6 @@
             font-size: 11px;
         }
 
-        /* Login Modal */
         .login-overlay {
             position: fixed;
             top: 0;
@@ -356,9 +346,7 @@
             padding: 16px;
         }
 
-        .login-overlay.visible {
-            display: flex;
-        }
+        .login-overlay.visible { display: flex; }
 
         .login-box {
             background: var(--surface);
@@ -369,16 +357,8 @@
             max-width: 320px;
         }
 
-        .login-box h2 {
-            font-size: 16px;
-            margin-bottom: 6px;
-        }
-
-        .login-box p {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 16px;
-        }
+        .login-box h2 { font-size: 16px; margin-bottom: 6px; }
+        .login-box p { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; }
 
         .login-box input {
             width: 100%;
@@ -397,9 +377,7 @@
             border-color: var(--accent);
         }
 
-        .login-box .btn {
-            width: 100%;
-        }
+        .login-box .btn { width: 100%; }
 
         .login-error {
             color: var(--danger);
@@ -408,7 +386,6 @@
             display: none;
         }
 
-        /* Footer */
         .footer {
             margin-top: 24px;
             padding-top: 16px;
@@ -422,7 +399,6 @@
             gap: 8px;
         }
 
-        /* Toast Notifications */
         .toast-container {
             position: fixed;
             top: 16px;
@@ -444,89 +420,40 @@
             animation: slideIn 0.3s ease;
         }
 
-        .toast.success {
-            border-color: var(--success);
-        }
-
-        .toast.error {
-            border-color: var(--danger);
-        }
+        .toast.success { border-color: var(--success); }
+        .toast.error { border-color: var(--danger); }
 
         @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Fullscreen */
-        body.fullscreen .container {
-            max-width: 100%;
-            padding: 8px;
+        .regime-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
         }
 
-        body.fullscreen header {
-            margin-bottom: 8px;
-        }
+        .regime-badge.trending { border-color: var(--success); color: var(--success); }
+        .regime-badge.choppy { border-color: var(--warning); color: var(--warning); }
 
-        body.fullscreen .metrics-grid {
-            margin-bottom: 8px;
-        }
-
-        body.fullscreen .section {
-            margin-bottom: 8px;
-        }
-
-        /* Mobile */
         @media (max-width: 600px) {
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
             }
-
-            .metric-value {
-                font-size: 16px;
-            }
-
-            .admin-buttons {
-                grid-template-columns: 1fr;
-            }
-
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .section-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 4px;
-            }
-
-            th, td {
-                padding: 8px 6px;
-                font-size: 10px;
-            }
-
-            .footer {
-                flex-direction: column;
-                text-align: center;
-            }
+            .metric-value { font-size: 16px; }
+            .admin-buttons { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; }
+            .header-actions { width: 100%; justify-content: space-between; }
+            th, td { padding: 8px 6px; font-size: 10px; }
         }
 
         @media (max-width: 400px) {
-            .metrics-grid {
-                grid-template-columns: 1fr;
-            }
+            .metrics-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -599,10 +526,11 @@
             <div class="metric-card">
                 <div class="metric-label">Total Trades</div>
                 <div class="metric-value" id="total-trades">--</div>
+                <div class="metric-sub" id="win-rate"></div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Mode</div>
-                <div class="metric-value" id="mode" style="font-size: 14px;">--</div>
+                <div class="metric-label">Regime</div>
+                <div class="metric-value" id="regime" style="font-size: 14px;">--</div>
             </div>
         </div>
 
@@ -614,14 +542,7 @@
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>Side</th>
-                            <th>Entry</th>
-                            <th>Current</th>
-                            <th>Size</th>
-                            <th>PnL</th>
-                        </tr>
+                        <tr><th>Symbol</th><th>Side</th><th>Entry</th><th>Current</th><th>Size</th><th>PnL</th></tr>
                     </thead>
                     <tbody id="positions-body">
                         <tr><td colspan="6" class="empty-state">No active positions</td></tr>
@@ -638,13 +559,7 @@
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>Dir</th>
-                            <th>Gap %</th>
-                            <th>Vol</th>
-                            <th>Score</th>
-                        </tr>
+                        <tr><th>Symbol</th><th>Dir</th><th>Gap %</th><th>Vol</th><th>Score</th></tr>
                     </thead>
                     <tbody id="scan-body">
                         <tr><td colspan="5" class="empty-state">No setups found</td></tr>
@@ -655,20 +570,14 @@
 
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Trade History</span>
+                <span class="section-title">Weekly Summary</span>
             </div>
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr>
-                            <th>Total</th>
-                            <th>Wins</th>
-                            <th>Losses</th>
-                            <th>Win Rate</th>
-                            <th>PnL</th>
-                        </tr>
+                        <tr><th>Total</th><th>Wins</th><th>Losses</th><th>Win Rate</th><th>PnL</th></tr>
                     </thead>
-                    <tbody id="trades-body">
+                    <tbody id="weekly-body">
                         <tr><td colspan="5" class="empty-state">No trades yet</td></tr>
                     </tbody>
                 </table>
@@ -684,17 +593,12 @@
     <script>
         const API_URL = localStorage.getItem('api_url') || 'https://alpaca-pulse-v1.onrender.com';
         let adminKey = localStorage.getItem('admin_key') || null;
-        let portfolioHistory = [];
         let audioCtx = null;
 
-        // Initialize audio context
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
 
-        // Play notification sound
         function playNotification() {
             initAudio();
             const osc = audioCtx.createOscillator();
@@ -708,7 +612,6 @@
             osc.stop(audioCtx.currentTime + 0.3);
         }
 
-        // Show toast notification
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -718,12 +621,10 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
-        // Fullscreen toggle
         function toggleFullscreen() {
             document.body.classList.toggle('fullscreen');
         }
 
-        // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
             if (e.target.tagName === 'INPUT') return;
             switch(e.key.toLowerCase()) {
@@ -839,12 +740,6 @@
             document.getElementById('active-positions').textContent = data.active_positions;
             document.getElementById('total-trades').textContent = data.total_trades;
             document.getElementById('mode').textContent = data.mode.toUpperCase();
-
-            // Track portfolio history
-            if (data.portfolio_value) {
-                portfolioHistory.push(data.portfolio_value);
-                if (portfolioHistory.length > 100) portfolioHistory.shift();
-            }
         }
 
         async function loadPositions() {
@@ -852,7 +747,6 @@
             const tbody = document.getElementById('positions-body');
             document.getElementById('positions-count').textContent = data ? data.length : 0;
             
-            // Play sound on new position
             if (data && data.length > lastPositionsCount && lastPositionsCount > 0) {
                 playNotification();
                 showToast(`New position opened!`, 'success');
@@ -897,9 +791,9 @@
             `).join('');
         }
 
-        async function loadTrades() {
-            const data = await apiGet('/api/trades');
-            const tbody = document.getElementById('trades-body');
+        async function loadWeekly() {
+            const data = await apiGet('/api/weekly');
+            const tbody = document.getElementById('weekly-body');
             
             if (!data || data.total_trades === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No trades yet</td></tr>';
@@ -915,6 +809,16 @@
                     <td class="${data.total_pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(data.total_pnl)}</td>
                 </tr>
             `;
+        }
+
+        async function loadRegime() {
+            const data = await apiGet('/api/journal');
+            const regime = document.getElementById('regime');
+            const winRate = document.getElementById('win-rate');
+            
+            if (data && data.total_trades > 0) {
+                winRate.textContent = `${data.win_rate?.toFixed(0) || 0}% win rate`;
+            }
         }
 
         async function loadClock() {
@@ -954,11 +858,11 @@
         }
 
         async function loadAll() {
-            await Promise.all([loadStatus(), loadPositions(), loadScan(), loadTrades(), loadClock()]);
+            await Promise.all([loadStatus(), loadPositions(), loadScan(), loadWeekly(), loadRegime(), loadClock()]);
             document.getElementById('last-updated').textContent = new Date().toLocaleString();
         }
 
-        setInterval(loadAll, 15000); // Faster refresh for live trading
+        setInterval(loadAll, 15000);
         loadAll();
     </script>
 </body>
