@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pulse V1 - Trading Dashboard</title>
+    <title>Pulse V1 — Institutional Trading</title>
     <style>
         :root {
-            --bg: #ffffff;
-            --surface: #f8f9fa;
-            --border: #e9ecef;
-            --text: #212529;
-            --text-muted: #6c757d;
-            --accent: #0d6efd;
-            --success: #198754;
-            --danger: #dc3545;
-            --warning: #ffc107;
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --surface-hover: #1a1a1a;
+            --border: #2a2a2a;
+            --text: #e0e0e0;
+            --text-muted: #808080;
+            --accent: #3b82f6;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
         }
 
         * {
@@ -24,194 +25,247 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            color: #1a1a1a;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.4;
+            min-height: 100vh;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 24px;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 16px;
-            }
-            
-            header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            
-            .card-value {
-                font-size: 22px;
-            }
-            
-            .controls {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            
-            .btn {
-                flex: 1;
-                min-width: 80px;
-                text-align: center;
-                margin-right: 0;
-            }
-            
-            table {
-                font-size: 13px;
-            }
-            
-            th, td {
-                padding: 8px 6px;
-            }
-            
-            .header-right {
-                width: 100%;
-                justify-content: space-between;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border);
             margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 16px;
         }
 
-        .header-left {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .header-right {
+        .brand {
             display: flex;
             align-items: center;
             gap: 12px;
-            flex-wrap: wrap;
         }
 
-        h1 {
-            font-size: 24px;
-            font-weight: 600;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
             font-size: 14px;
+            color: white;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 4px;
+        .brand-text h1 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 12px;
-            font-weight: 500;
-            text-transform: uppercase;
         }
 
-        .status-running {
-            background: #d1fae5;
-            color: #065f46;
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
         }
 
-        .status-stopped {
-            background: #fee2e2;
-            color: #991b1b;
+        .status-dot.running {
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
         }
 
-        .status-paper {
-            background: #dbeafe;
-            color: #1e40af;
+        .status-dot.stopped {
+            background: var(--danger);
         }
 
-        .grid {
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn:hover {
+            background: var(--surface-hover);
+            border-color: var(--text-muted);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+
+        .btn-danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 16px;
             margin-bottom: 32px;
         }
 
-        .card {
+        .metric-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 20px;
         }
 
-        .card-label {
-            font-size: 12px;
+        .metric-label {
+            font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 8px;
         }
 
-        .card-value {
-            font-size: 28px;
+        .metric-value {
+            font-size: 24px;
             font-weight: 600;
+            font-family: 'SF Mono', monospace;
         }
 
-        .card-value.positive {
+        .metric-value.positive {
             color: var(--success);
         }
 
-        .card-value.negative {
+        .metric-value.negative {
             color: var(--danger);
         }
 
+        /* Admin Panel */
+        .admin-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 32px;
+            display: none;
+        }
+
+        .admin-panel.visible {
+            display: block;
+        }
+
+        .admin-title {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .admin-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Tables */
         .section {
             margin-bottom: 32px;
         }
 
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .section-count {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .table-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
         }
 
         th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
             font-weight: 500;
             color: var(--text-muted);
-            font-size: 12px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background: var(--surface-hover);
         }
 
         .pnl-positive {
@@ -222,91 +276,21 @@
             color: var(--danger);
         }
 
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            margin-right: 8px;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: var(--surface);
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .controls {
-            margin-bottom: 24px;
-            padding: 16px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-
-        .controls-title {
-            font-size: 12px;
+        .empty-state {
+            padding: 40px;
+            text-align: center;
             color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 12px;
+            font-size: 13px;
         }
 
-        .clock {
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-
-        .setup-long {
-            color: var(--success);
-        }
-
-        .setup-short {
-            color: var(--danger);
-        }
-
-        .refresh-btn {
-            background: none;
-            border: 1px solid var(--border);
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-
-        .refresh-btn:hover {
-            background: var(--surface);
-        }
-
-        #last-updated {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
+        /* Login Modal */
         .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
@@ -314,241 +298,265 @@
             z-index: 1000;
         }
 
+        .login-overlay.visible {
+            display: flex;
+        }
+
         .login-box {
-            background: #ffffff;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 32px;
-            width: 400px;
+            width: 360px;
             max-width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .login-box h2 {
+            font-size: 18px;
             margin-bottom: 8px;
-            font-size: 20px;
-            font-weight: 600;
         }
 
-        .password-wrapper {
-            position: relative;
+        .login-box p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 14px;
             margin-bottom: 12px;
         }
 
-        .password-wrapper input {
-            width: 100%;
-            padding: 12px 40px 12px 12px;
-            border: 1px solid #d0d0d0;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: border-color 0.2s;
-        }
-
-        .password-wrapper input:focus {
+        .login-box input:focus {
             outline: none;
-            border-color: #4f46e5;
+            border-color: var(--accent);
         }
 
-        .eye-btn {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 18px;
-            opacity: 0.6;
-            transition: opacity 0.2s;
-        }
-
-        .eye-btn:hover {
-            opacity: 1;
-        }
-
-        @media (max-width: 768px) {
-            .login-box {
-                width: 90%;
-                padding: 24px;
-            }
+        .login-box .btn {
+            width: 100%;
         }
 
         .login-error {
             color: var(--danger);
-            font-size: 13px;
-            margin-bottom: 8px;
+            font-size: 12px;
+            margin-bottom: 12px;
             display: none;
         }
 
-        .admin-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: var(--accent);
-            color: white;
-            border-radius: 4px;
-            font-size: 11px;
-            margin-left: 8px;
-        }
-
-        .view-toggle {
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
             display: flex;
-            gap: 8px;
+            justify-content: space-between;
             align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
         }
 
-        .api-status {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 8px;
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .metric-value {
+                font-size: 20px;
+            }
+
+            .admin-buttons {
+                flex-direction: column;
+            }
+
+            .admin-buttons .btn {
+                width: 100%;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <div id="login-overlay" class="login-overlay">
         <div class="login-box">
-            <h2>🔐 Admin Login</h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 16px;">Enter admin password to access controls.</p>
-            <div class="password-wrapper">
-                <input type="password" id="admin-password" placeholder="Admin Password" autofocus>
-                <button class="eye-btn" onclick="togglePassword()" aria-label="Show password">👁</button>
-            </div>
+            <h2>Admin Login</h2>
+            <p>Enter admin password to access controls.</p>
+            <input type="password" id="admin-password" placeholder="Admin Password" autofocus>
             <div id="login-error" class="login-error">Invalid password</div>
             <button class="btn btn-primary" onclick="adminLogin()">Login</button>
-            <button class="btn btn-secondary" onclick="closeLogin()" style="margin-top: 8px;">Cancel</button>
+            <button class="btn" onclick="closeLogin()" style="margin-top: 8px;">Cancel</button>
         </div>
     </div>
 
     <div class="container">
         <header>
-            <div class="header-left">
-                <h1>Pulse V1</h1>
-                <p class="subtitle">Automated Trading System</p>
+            <div class="brand">
+                <div class="logo">P1</div>
+                <div class="brand-text">
+                    <h1>Pulse V1</h1>
+                    <p>Institutional Trading System</p>
+                </div>
             </div>
-            <div class="header-right">
-                <span id="market-clock" class="clock">--:--:--</span>
-                <span id="status-badge" class="status-badge status-stopped">Stopped</span>
-                <button class="refresh-btn" onclick="loadAll()">Refresh</button>
-                <span id="admin-badge" class="admin-badge" style="display: none;">ADMIN</span>
-                <button class="refresh-btn" id="admin-btn" onclick="openLogin()">Admin Login</button>
-                <button class="refresh-btn" id="logout-btn" onclick="adminLogout()" style="display: none;">Logout</button>
+            <div class="header-actions">
+                <div class="status-indicator">
+                    <div id="status-dot" class="status-dot stopped"></div>
+                    <span id="status-text">Stopped</span>
+                </div>
+                <span id="market-clock" style="font-size: 12px; color: var(--text-muted);">--:--:--</span>
+                <button class="btn" onclick="loadAll()">Refresh</button>
+                <button class="btn" id="admin-btn" onclick="openLogin()">Admin</button>
+                <button class="btn" id="logout-btn" onclick="adminLogout()" style="display: none;">Logout</button>
             </div>
         </header>
 
-        <!-- Admin Controls (hidden by default) -->
-        <div class="controls" id="admin-controls" style="display: none;">
-            <div class="controls-title">⚡ Admin Controls</div>
-            <button class="btn btn-primary" onclick="startTrading()">Start</button>
-            <button class="btn btn-danger" onclick="stopTrading()">Stop</button>
-            <button class="btn btn-secondary" onclick="closeAll()">Close All</button>
-            <button class="btn btn-secondary" onclick="cancelAll()">Cancel Orders</button>
+        <div class="admin-panel" id="admin-panel">
+            <div class="admin-title">Admin Controls</div>
+            <div class="admin-buttons">
+                <button class="btn btn-primary" onclick="startTrading()">Start</button>
+                <button class="btn btn-danger" onclick="stopTrading()">Stop</button>
+                <button class="btn" onclick="closeAll()">Close All</button>
+                <button class="btn" onclick="cancelAll()">Cancel Orders</button>
+            </div>
         </div>
 
-        <div class="grid" id="metrics-grid">
-            <div class="card">
-                <div class="card-label">Portfolio Value</div>
-                <div class="card-value" id="portfolio-value">--</div>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Portfolio Value</div>
+                <div class="metric-value" id="portfolio-value">--</div>
             </div>
-            <div class="card">
-                <div class="card-label">Buying Power</div>
-                <div class="card-value" id="buying-power">--</div>
+            <div class="metric-card">
+                <div class="metric-label">Buying Power</div>
+                <div class="metric-value" id="buying-power">--</div>
             </div>
-            <div class="card">
-                <div class="card-label">Daily PnL</div>
-                <div class="card-value" id="daily-pnl">--</div>
+            <div class="metric-card">
+                <div class="metric-label">Daily PnL</div>
+                <div class="metric-value" id="daily-pnl">--</div>
             </div>
-            <div class="card">
-                <div class="card-label">Active Positions</div>
-                <div class="card-value" id="active-positions">--</div>
+            <div class="metric-card">
+                <div class="metric-label">Active Positions</div>
+                <div class="metric-value" id="active-positions">--</div>
             </div>
-            <div class="card">
-                <div class="card-label">Total Trades</div>
-                <div class="card-value" id="total-trades">--</div>
+            <div class="metric-card">
+                <div class="metric-label">Total Trades</div>
+                <div class="metric-value" id="total-trades">--</div>
             </div>
-            <div class="card">
-                <div class="card-label">Mode</div>
-                <div class="card-value" id="mode" style="font-size: 18px;">--</div>
+            <div class="metric-card">
+                <div class="metric-label">Mode</div>
+                <div class="metric-value" id="mode" style="font-size: 16px;">--</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Active Positions</span>
+                <span class="section-count" id="positions-count">0</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Side</th>
+                            <th>Entry</th>
+                            <th>Current</th>
+                            <th>Size</th>
+                            <th>PnL</th>
+                            <th>PnL %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="positions-body">
+                        <tr><td colspan="7" class="empty-state">No active positions</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <div class="section">
-            <h2 class="section-title">Active Positions</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Side</th>
-                        <th>Entry</th>
-                        <th>Current</th>
-                        <th>Size</th>
-                        <th>PnL</th>
-                        <th>PnL %</th>
-                    </tr>
-                </thead>
-                <tbody id="positions-body">
-                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No active positions</td></tr>
-                </tbody>
-            </table>
+            <div class="section-header">
+                <span class="section-title">Pre-Market Scan</span>
+                <span class="section-count" id="scan-count">0</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Direction</th>
+                            <th>Gap %</th>
+                            <th>Volume</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scan-body">
+                        <tr><td colspan="5" class="empty-state">No setups found</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="section">
-            <h2 class="section-title">Pre-Market Scan</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Direction</th>
-                        <th>Gap %</th>
-                        <th>Volume</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody id="scan-body">
-                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No setups found</td></tr>
-                </tbody>
-            </table>
+            <div class="section-header">
+                <span class="section-title">Trade History</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Side</th>
+                            <th>Entry</th>
+                            <th>Exit</th>
+                            <th>Size</th>
+                            <th>PnL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="trades-body">
+                        <tr><td colspan="6" class="empty-state">No trades yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="section">
-            <h2 class="section-title">Trade History</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Symbol</th>
-                        <th>Side</th>
-                        <th>Entry</th>
-                        <th>Exit</th>
-                        <th>Size</th>
-                        <th>PnL</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-                <tbody id="trades-body">
-                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>
-                </tbody>
-            </table>
+        <div class="footer">
+            <span>Last updated: <span id="last-updated">--</span></span>
+            <span>Pulse V1 — Built for institutional execution</span>
         </div>
-
-        <div class="section">
-            <h2 class="section-title">Daily Statistics</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Trades</th>
-                        <th>Wins</th>
-                        <th>Losses</th>
-                        <th>Win Rate</th>
-                        <th>PnL</th>
-                        <th>Portfolio</th>
-                    </tr>
-                </thead>
-                <tbody id="daily-body">
-                    <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No data available</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <p id="last-updated">Last updated: --</p>
     </div>
 
     <script>
@@ -556,21 +564,12 @@
         let adminKey = localStorage.getItem('admin_key') || null;
 
         function openLogin() {
-            document.getElementById('login-overlay').style.display = 'flex';
+            document.getElementById('login-overlay').classList.add('visible');
         }
 
         function closeLogin() {
-            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('login-overlay').classList.remove('visible');
             document.getElementById('login-error').style.display = 'none';
-        }
-
-        function togglePassword() {
-            const input = document.getElementById('admin-password');
-            if (input.type === 'password') {
-                input.type = 'text';
-            } else {
-                input.type = 'password';
-            }
         }
 
         function adminLogin() {
@@ -592,25 +591,21 @@
         }
 
         function showAdminControls() {
-            document.getElementById('admin-controls').style.display = 'block';
-            document.getElementById('admin-badge').style.display = 'inline-block';
+            document.getElementById('admin-panel').classList.add('visible');
             document.getElementById('admin-btn').style.display = 'none';
             document.getElementById('logout-btn').style.display = 'inline-block';
         }
 
         function hideAdminControls() {
-            document.getElementById('admin-controls').style.display = 'none';
-            document.getElementById('admin-badge').style.display = 'none';
+            document.getElementById('admin-panel').classList.remove('visible');
             document.getElementById('admin-btn').style.display = 'inline-block';
             document.getElementById('logout-btn').style.display = 'none';
         }
 
-        // Check if already logged in
         if (adminKey) {
             showAdminControls();
         }
 
-        // Allow Enter key to login
         document.getElementById('admin-password').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') adminLogin();
         });
@@ -618,65 +613,54 @@
         async function apiGet(endpoint) {
             try {
                 const headers = {};
-                if (adminKey) {
-                    headers['Authorization'] = `Bearer ${adminKey}`;
-                }
+                if (adminKey) headers['Authorization'] = `Bearer ${adminKey}`;
                 const resp = await fetch(`${API_URL}${endpoint}`, { headers });
-                if (resp.status === 401) {
-                    adminLogout();
-                    return null;
-                }
+                if (resp.status === 401) { adminLogout(); return null; }
                 return await resp.json();
-            } catch (e) {
-                console.error('API error:', e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         async function apiPost(endpoint) {
             try {
                 const headers = {};
-                if (adminKey) {
-                    headers['Authorization'] = `Bearer ${adminKey}`;
-                }
+                if (adminKey) headers['Authorization'] = `Bearer ${adminKey}`;
                 const resp = await fetch(`${API_URL}${endpoint}`, { method: 'POST', headers });
-                if (resp.status === 401) {
-                    alert('Unauthorized: Please login as admin');
-                    adminLogout();
-                    return null;
-                }
+                if (resp.status === 401) { alert('Unauthorized'); adminLogout(); return null; }
                 return await resp.json();
-            } catch (e) {
-                console.error('API error:', e);
-                return null;
-            }
+            } catch (e) { return null; }
         }
 
         function formatCurrency(val) {
+            if (val === undefined || val === null) return '--';
             return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
         }
 
         function formatPercent(val) {
+            if (val === undefined || val === null) return '--';
             return (val * 100).toFixed(2) + '%';
-        }
-
-        function formatTime(iso) {
-            if (!iso) return '--';
-            return new Date(iso).toLocaleString();
         }
 
         async function loadStatus() {
             const data = await apiGet('/api/status');
             if (!data) return;
 
-            document.getElementById('status-badge').textContent = data.status;
-            document.getElementById('status-badge').className = `status-badge status-${data.status}`;
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text');
+            
+            if (data.status === 'running') {
+                dot.className = 'status-dot running';
+                text.textContent = 'Running';
+            } else {
+                dot.className = 'status-dot stopped';
+                text.textContent = 'Stopped';
+            }
+
             document.getElementById('portfolio-value').textContent = formatCurrency(data.portfolio_value);
             document.getElementById('buying-power').textContent = formatCurrency(data.buying_power);
             
-            const dailyPnl = document.getElementById('daily-pnl');
-            dailyPnl.textContent = formatCurrency(data.daily_pnl);
-            dailyPnl.className = `card-value ${data.daily_pnl >= 0 ? 'positive' : 'negative'}`;
+            const pnl = document.getElementById('daily-pnl');
+            pnl.textContent = formatCurrency(data.daily_pnl);
+            pnl.className = `metric-value ${data.daily_pnl >= 0 ? 'positive' : 'negative'}`;
             
             document.getElementById('active-positions').textContent = data.active_positions;
             document.getElementById('total-trades').textContent = data.total_trades;
@@ -686,9 +670,10 @@
         async function loadPositions() {
             const data = await apiGet('/api/positions');
             const tbody = document.getElementById('positions-body');
+            document.getElementById('positions-count').textContent = data ? data.length : 0;
             
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No active positions</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No active positions</td></tr>';
                 return;
             }
 
@@ -708,19 +693,20 @@
         async function loadScan() {
             const data = await apiGet('/api/scan');
             const tbody = document.getElementById('scan-body');
+            document.getElementById('scan-count').textContent = data ? data.length : 0;
             
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No setups found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No setups found</td></tr>';
                 return;
             }
 
             tbody.innerHTML = data.map(s => `
                 <tr>
                     <td><strong>${s.symbol}</strong></td>
-                    <td class="${s.direction === 'long' ? 'setup-long' : 'setup-short'}">${s.direction.toUpperCase()}</td>
-                    <td>${formatPercent(s.gap_pct)}</td>
-                    <td>${s.pm_volume.toLocaleString()}</td>
-                    <td>${s.score.toFixed(2)}</td>
+                    <td>${s.direction.toUpperCase()}</td>
+                    <td>${(s.gap_pct * 100).toFixed(2)}%</td>
+                    <td>${s.pm_volume?.toLocaleString() || '--'}</td>
+                    <td>${s.score || '--'}</td>
                 </tr>
             `).join('');
         }
@@ -729,50 +715,22 @@
             const data = await apiGet('/api/trades');
             const tbody = document.getElementById('trades-body');
             
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>';
+            if (!data || data.total_trades === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No trades yet</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = data.map(t => `
-                <tr>
-                    <td><strong>${t.symbol}</strong></td>
-                    <td>${t.side}</td>
-                    <td>${formatCurrency(t.entry)}</td>
-                    <td>${formatCurrency(t.exit_price)}</td>
-                    <td>${t.size}</td>
-                    <td class="${t.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(t.pnl)}</td>
-                    <td>${formatTime(t.exit_time)}</td>
-                </tr>
-            `).join('');
-        }
-
-        async function loadDaily() {
-            const data = await apiGet('/api/daily');
-            const tbody = document.getElementById('daily-body');
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No data available</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(d => `
-                <tr>
-                    <td>${d.date}</td>
-                    <td>${d.trades}</td>
-                    <td>${d.wins}</td>
-                    <td>${d.losses}</td>
-                    <td>${formatPercent(d.win_rate)}</td>
-                    <td class="${d.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(d.pnl)}</td>
-                    <td>${formatCurrency(d.portfolio)}</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = `
+                <tr><td colspan="6" class="empty-state">
+                    Total: ${data.total_trades} | Wins: ${data.wins} | Losses: ${data.losses} | 
+                    Win Rate: ${data.win_rate?.toFixed(0) || 0}% | PnL: ${formatCurrency(data.total_pnl)}
+                </td></tr>
+            `;
         }
 
         async function loadClock() {
             const data = await apiGet('/api/clock');
             if (!data) return;
-            
             const clock = document.getElementById('market-clock');
             const isOpen = data.is_open ? 'Open' : 'Closed';
             clock.textContent = `Market: ${isOpen}`;
@@ -803,21 +761,11 @@
         }
 
         async function loadAll() {
-            await Promise.all([
-                loadStatus(),
-                loadPositions(),
-                loadScan(),
-                loadTrades(),
-                loadDaily(),
-                loadClock(),
-            ]);
-            document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleString()}`;
+            await Promise.all([loadStatus(), loadPositions(), loadScan(), loadTrades(), loadClock()]);
+            document.getElementById('last-updated').textContent = new Date().toLocaleString();
         }
 
-        // Auto-refresh every 30 seconds
         setInterval(loadAll, 30000);
-
-        // Initial load
         loadAll();
     </script>
 </body>
