@@ -625,16 +625,6 @@
             document.body.classList.toggle('fullscreen');
         }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.target.tagName === 'INPUT') return;
-            switch(e.key.toLowerCase()) {
-                case 's': startTrading(); break;
-                case 'x': stopTrading(); break;
-                case 'r': loadAll(); break;
-                case 'f': toggleFullscreen(); break;
-            }
-        });
-
         function openLogin() {
             document.getElementById('login-overlay').classList.add('visible');
             document.getElementById('admin-password').focus();
