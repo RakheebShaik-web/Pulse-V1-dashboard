@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pulse V1 — Institutional Trading</title>
     <style>
         :root {
@@ -13,29 +13,35 @@
             --text: #e0e0e0;
             --text-muted: #808080;
             --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
             --success: #22c55e;
+            --success-glow: rgba(34, 197, 94, 0.3);
             --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.3);
             --warning: #f59e0b;
+            --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace;
+            font-family: var(--font-mono);
             background: var(--bg);
             color: var(--text);
             line-height: 1.4;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 24px;
+            padding: 16px;
         }
 
         /* Header */
@@ -43,85 +49,102 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 20px;
+            padding-bottom: 16px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .logo {
-            width: 32px;
-            height: 32px;
-            background: var(--accent);
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 11px;
             color: white;
         }
 
         .brand-text h1 {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text);
         }
 
         .brand-text p {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12px;
+            gap: 6px;
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--surface);
+            border-radius: 4px;
+            border: 1px solid var(--border);
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--text-muted);
         }
 
         .status-dot.running {
             background: var(--success);
-            box-shadow: 0 0 8px var(--success);
+            box-shadow: 0 0 8px var(--success-glow);
+            animation: pulse 2s infinite;
         }
 
         .status-dot.stopped {
             background: var(--danger);
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .btn {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border: 1px solid var(--border);
             border-radius: 4px;
             background: var(--surface);
             color: var(--text);
             font-family: inherit;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
             transition: all 0.15s;
+            white-space: nowrap;
         }
 
         .btn:hover {
             background: var(--surface-hover);
             border-color: var(--text-muted);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
         }
 
         .btn-primary {
@@ -132,6 +155,7 @@
 
         .btn-primary:hover {
             background: #2563eb;
+            box-shadow: 0 0 12px var(--accent-glow);
         }
 
         .btn-danger {
@@ -147,30 +171,48 @@
         /* Metrics Grid */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .metric-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 20px;
+            padding: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
         }
 
         .metric-label {
-            font-size: 11px;
+            font-size: 9px;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .metric-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 600;
-            font-family: 'SF Mono', monospace;
+            font-family: var(--font-mono);
         }
 
         .metric-value.positive {
@@ -181,13 +223,19 @@
             color: var(--danger);
         }
 
+        .metric-sub {
+            font-size: 9px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
         /* Admin Panel */
         .admin-panel {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 16px;
-            margin-bottom: 32px;
+            padding: 12px;
+            margin-bottom: 20px;
             display: none;
         }
 
@@ -196,39 +244,47 @@
         }
 
         .admin-title {
-            font-size: 11px;
+            font-size: 9px;
             color: var(--text-muted);
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .admin-buttons {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
-            flex-wrap: wrap;
+        }
+
+        .admin-buttons .btn {
+            width: 100%;
+            text-align: center;
         }
 
         /* Tables */
         .section {
-            margin-bottom: 32px;
+            margin-bottom: 20px;
         }
 
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 10px;
         }
 
         .section-title {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: var(--text);
         }
 
         .section-count {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
+            background: var(--surface);
+            padding: 2px 8px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
         }
 
         .table-container {
@@ -245,18 +301,19 @@
 
         th {
             text-align: left;
-            padding: 12px 16px;
-            font-size: 11px;
+            padding: 10px 12px;
+            font-size: 9px;
             font-weight: 500;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border);
+            background: var(--surface);
         }
 
         td {
-            padding: 12px 16px;
-            font-size: 13px;
+            padding: 10px 12px;
+            font-size: 12px;
             border-bottom: 1px solid var(--border);
         }
 
@@ -277,10 +334,10 @@
         }
 
         .empty-state {
-            padding: 40px;
+            padding: 24px;
             text-align: center;
             color: var(--text-muted);
-            font-size: 13px;
+            font-size: 11px;
         }
 
         /* Login Modal */
@@ -290,12 +347,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 16px;
         }
 
         .login-overlay.visible {
@@ -306,32 +364,32 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 32px;
-            width: 360px;
-            max-width: 90%;
+            padding: 24px;
+            width: 100%;
+            max-width: 320px;
         }
 
         .login-box h2 {
-            font-size: 18px;
-            margin-bottom: 8px;
+            font-size: 16px;
+            margin-bottom: 6px;
         }
 
         .login-box p {
-            font-size: 13px;
+            font-size: 11px;
             color: var(--text-muted);
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .login-box input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             background: var(--bg);
             border: 1px solid var(--border);
             border-radius: 4px;
             color: var(--text);
             font-family: inherit;
-            font-size: 14px;
-            margin-bottom: 12px;
+            font-size: 13px;
+            margin-bottom: 10px;
         }
 
         .login-box input:focus {
@@ -345,33 +403,102 @@
 
         .login-error {
             color: var(--danger);
-            font-size: 12px;
-            margin-bottom: 12px;
+            font-size: 11px;
+            margin-bottom: 10px;
             display: none;
         }
 
         /* Footer */
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
+            margin-top: 24px;
+            padding-top: 16px;
             border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 11px;
+            min-width: 200px;
+            max-width: 300px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Fullscreen */
+        body.fullscreen .container {
+            max-width: 100%;
+            padding: 8px;
+        }
+
+        body.fullscreen header {
+            margin-bottom: 8px;
+        }
+
+        body.fullscreen .metrics-grid {
+            margin-bottom: 8px;
+        }
+
+        body.fullscreen .section {
+            margin-bottom: 8px;
         }
 
         /* Mobile */
-        @media (max-width: 768px) {
-            .container {
-                padding: 16px;
+        @media (max-width: 600px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .metric-value {
+                font-size: 16px;
+            }
+
+            .admin-buttons {
+                grid-template-columns: 1fr;
             }
 
             header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 16px;
             }
 
             .header-actions {
@@ -379,33 +506,24 @@
                 justify-content: space-between;
             }
 
-            .metrics-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-
-            .metric-value {
-                font-size: 20px;
-            }
-
-            .admin-buttons {
+            .section-header {
                 flex-direction: column;
-            }
-
-            .admin-buttons .btn {
-                width: 100%;
-            }
-
-            table {
-                font-size: 12px;
+                align-items: flex-start;
+                gap: 4px;
             }
 
             th, td {
-                padding: 10px 8px;
+                padding: 8px 6px;
+                font-size: 10px;
+            }
+
+            .footer {
+                flex-direction: column;
+                text-align: center;
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 400px) {
             .metrics-grid {
                 grid-template-columns: 1fr;
             }
@@ -424,13 +542,15 @@
         </div>
     </div>
 
+    <div class="toast-container" id="toast-container"></div>
+
     <div class="container">
         <header>
             <div class="brand">
                 <div class="logo">P1</div>
                 <div class="brand-text">
                     <h1>Pulse V1</h1>
-                    <p>Institutional Trading System</p>
+                    <p>Institutional Trading</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -438,8 +558,9 @@
                     <div id="status-dot" class="status-dot stopped"></div>
                     <span id="status-text">Stopped</span>
                 </div>
-                <span id="market-clock" style="font-size: 12px; color: var(--text-muted);">--:--:--</span>
-                <button class="btn" onclick="loadAll()">Refresh</button>
+                <span id="market-clock" style="font-size: 11px; color: var(--text-muted);">--:--:--</span>
+                <button class="btn" onclick="toggleFullscreen()" title="Fullscreen (F)">⛶</button>
+                <button class="btn" onclick="loadAll()" title="Refresh (R)">↻</button>
                 <button class="btn" id="admin-btn" onclick="openLogin()">Admin</button>
                 <button class="btn" id="logout-btn" onclick="adminLogout()" style="display: none;">Logout</button>
             </div>
@@ -448,29 +569,32 @@
         <div class="admin-panel" id="admin-panel">
             <div class="admin-title">Admin Controls</div>
             <div class="admin-buttons">
-                <button class="btn btn-primary" onclick="startTrading()">Start</button>
-                <button class="btn btn-danger" onclick="stopTrading()">Stop</button>
-                <button class="btn" onclick="closeAll()">Close All</button>
-                <button class="btn" onclick="cancelAll()">Cancel Orders</button>
+                <button class="btn btn-primary" onclick="startTrading()">▶ Start</button>
+                <button class="btn btn-danger" onclick="stopTrading()">■ Stop</button>
+                <button class="btn" onclick="closeAll()">✕ Close All</button>
+                <button class="btn" onclick="cancelAll()">✕ Cancel Orders</button>
             </div>
         </div>
 
         <div class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-label">Portfolio Value</div>
+                <div class="metric-label">Portfolio</div>
                 <div class="metric-value" id="portfolio-value">--</div>
+                <div class="metric-sub" id="portfolio-change"></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Daily PnL</div>
+                <div class="metric-value" id="daily-pnl">--</div>
+                <div class="metric-sub" id="daily-pnl-pct"></div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Buying Power</div>
                 <div class="metric-value" id="buying-power">--</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Daily PnL</div>
-                <div class="metric-value" id="daily-pnl">--</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Active Positions</div>
+                <div class="metric-label">Positions</div>
                 <div class="metric-value" id="active-positions">--</div>
+                <div class="metric-sub">Max 3</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Total Trades</div>
@@ -478,7 +602,7 @@
             </div>
             <div class="metric-card">
                 <div class="metric-label">Mode</div>
-                <div class="metric-value" id="mode" style="font-size: 16px;">--</div>
+                <div class="metric-value" id="mode" style="font-size: 14px;">--</div>
             </div>
         </div>
 
@@ -497,11 +621,10 @@
                             <th>Current</th>
                             <th>Size</th>
                             <th>PnL</th>
-                            <th>PnL %</th>
                         </tr>
                     </thead>
                     <tbody id="positions-body">
-                        <tr><td colspan="7" class="empty-state">No active positions</td></tr>
+                        <tr><td colspan="6" class="empty-state">No active positions</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -517,9 +640,9 @@
                     <thead>
                         <tr>
                             <th>Symbol</th>
-                            <th>Direction</th>
+                            <th>Dir</th>
                             <th>Gap %</th>
-                            <th>Volume</th>
+                            <th>Vol</th>
                             <th>Score</th>
                         </tr>
                     </thead>
@@ -538,16 +661,15 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Symbol</th>
-                            <th>Side</th>
-                            <th>Entry</th>
-                            <th>Exit</th>
-                            <th>Size</th>
+                            <th>Total</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Win Rate</th>
                             <th>PnL</th>
                         </tr>
                     </thead>
                     <tbody id="trades-body">
-                        <tr><td colspan="6" class="empty-state">No trades yet</td></tr>
+                        <tr><td colspan="5" class="empty-state">No trades yet</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -562,9 +684,59 @@
     <script>
         const API_URL = localStorage.getItem('api_url') || 'https://alpaca-pulse-v1.onrender.com';
         let adminKey = localStorage.getItem('admin_key') || null;
+        let portfolioHistory = [];
+        let audioCtx = null;
+
+        // Initialize audio context
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Play notification sound
+        function playNotification() {
+            initAudio();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.value = 800;
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start(audioCtx.currentTime);
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Fullscreen toggle
+        function toggleFullscreen() {
+            document.body.classList.toggle('fullscreen');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.target.tagName === 'INPUT') return;
+            switch(e.key.toLowerCase()) {
+                case 's': startTrading(); break;
+                case 'x': stopTrading(); break;
+                case 'r': loadAll(); break;
+                case 'f': toggleFullscreen(); break;
+            }
+        });
 
         function openLogin() {
             document.getElementById('login-overlay').classList.add('visible');
+            document.getElementById('admin-password').focus();
         }
 
         function closeLogin() {
@@ -579,6 +751,7 @@
                 localStorage.setItem('admin_key', password);
                 closeLogin();
                 showAdminControls();
+                showToast('Logged in successfully', 'success');
             } else {
                 document.getElementById('login-error').style.display = 'block';
             }
@@ -588,6 +761,7 @@
             adminKey = null;
             localStorage.removeItem('admin_key');
             hideAdminControls();
+            showToast('Logged out', 'info');
         }
 
         function showAdminControls() {
@@ -602,9 +776,7 @@
             document.getElementById('logout-btn').style.display = 'none';
         }
 
-        if (adminKey) {
-            showAdminControls();
-        }
+        if (adminKey) showAdminControls();
 
         document.getElementById('admin-password').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') adminLogin();
@@ -632,13 +804,15 @@
 
         function formatCurrency(val) {
             if (val === undefined || val === null) return '--';
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(val);
         }
 
         function formatPercent(val) {
             if (val === undefined || val === null) return '--';
             return (val * 100).toFixed(2) + '%';
         }
+
+        let lastPositionsCount = 0;
 
         async function loadStatus() {
             const data = await apiGet('/api/status');
@@ -656,15 +830,21 @@
             }
 
             document.getElementById('portfolio-value').textContent = formatCurrency(data.portfolio_value);
-            document.getElementById('buying-power').textContent = formatCurrency(data.buying_power);
             
             const pnl = document.getElementById('daily-pnl');
             pnl.textContent = formatCurrency(data.daily_pnl);
             pnl.className = `metric-value ${data.daily_pnl >= 0 ? 'positive' : 'negative'}`;
             
+            document.getElementById('buying-power').textContent = formatCurrency(data.buying_power);
             document.getElementById('active-positions').textContent = data.active_positions;
             document.getElementById('total-trades').textContent = data.total_trades;
             document.getElementById('mode').textContent = data.mode.toUpperCase();
+
+            // Track portfolio history
+            if (data.portfolio_value) {
+                portfolioHistory.push(data.portfolio_value);
+                if (portfolioHistory.length > 100) portfolioHistory.shift();
+            }
         }
 
         async function loadPositions() {
@@ -672,8 +852,15 @@
             const tbody = document.getElementById('positions-body');
             document.getElementById('positions-count').textContent = data ? data.length : 0;
             
+            // Play sound on new position
+            if (data && data.length > lastPositionsCount && lastPositionsCount > 0) {
+                playNotification();
+                showToast(`New position opened!`, 'success');
+            }
+            lastPositionsCount = data ? data.length : 0;
+            
             if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No active positions</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No active positions</td></tr>';
                 return;
             }
 
@@ -685,7 +872,6 @@
                     <td>${formatCurrency(p.current_price)}</td>
                     <td>${p.size}</td>
                     <td class="${p.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(p.pnl)}</td>
-                    <td class="${p.pnl_pct >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatPercent(p.pnl_pct)}</td>
                 </tr>
             `).join('');
         }
@@ -703,8 +889,8 @@
             tbody.innerHTML = data.map(s => `
                 <tr>
                     <td><strong>${s.symbol}</strong></td>
-                    <td>${s.direction.toUpperCase()}</td>
-                    <td>${(s.gap_pct * 100).toFixed(2)}%</td>
+                    <td>${s.direction?.toUpperCase() || '--'}</td>
+                    <td>${s.gap_pct ? (s.gap_pct * 100).toFixed(2) + '%' : '--'}</td>
                     <td>${s.pm_volume?.toLocaleString() || '--'}</td>
                     <td>${s.score || '--'}</td>
                 </tr>
@@ -716,15 +902,18 @@
             const tbody = document.getElementById('trades-body');
             
             if (!data || data.total_trades === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No trades yet</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No trades yet</td></tr>';
                 return;
             }
 
             tbody.innerHTML = `
-                <tr><td colspan="6" class="empty-state">
-                    Total: ${data.total_trades} | Wins: ${data.wins} | Losses: ${data.losses} | 
-                    Win Rate: ${data.win_rate?.toFixed(0) || 0}% | PnL: ${formatCurrency(data.total_pnl)}
-                </td></tr>
+                <tr>
+                    <td>${data.total_trades}</td>
+                    <td>${data.wins}</td>
+                    <td>${data.losses}</td>
+                    <td>${data.win_rate?.toFixed(0) || 0}%</td>
+                    <td class="${data.total_pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(data.total_pnl)}</td>
+                </tr>
             `;
         }
 
@@ -739,24 +928,28 @@
         async function startTrading() {
             if (!confirm('Start trading?')) return;
             await apiPost('/api/start');
+            showToast('Trading started!', 'success');
             loadAll();
         }
 
         async function stopTrading() {
             if (!confirm('Stop trading?')) return;
             await apiPost('/api/stop');
+            showToast('Trading stopped', 'info');
             loadAll();
         }
 
         async function closeAll() {
             if (!confirm('Close all positions?')) return;
             await apiPost('/api/close-all');
+            showToast('All positions closed', 'success');
             loadAll();
         }
 
         async function cancelAll() {
             if (!confirm('Cancel all orders?')) return;
             await apiPost('/api/cancel-all');
+            showToast('All orders cancelled', 'info');
             loadAll();
         }
 
@@ -765,7 +958,7 @@
             document.getElementById('last-updated').textContent = new Date().toLocaleString();
         }
 
-        setInterval(loadAll, 30000);
+        setInterval(loadAll, 15000); // Faster refresh for live trading
         loadAll();
     </script>
 </body>
