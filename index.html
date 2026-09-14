@@ -26,33 +26,45 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: var(--font-mono);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.4;
             min-height: 100vh;
-            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body.fullscreen {
+            overflow: hidden;
+        }
+
+        body.fullscreen .header,
+        body.fullscreen .footer {
+            display: none;
+        }
+
+        body.fullscreen .container {
+            padding-top: 16px;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 16px;
+            padding: 20px 24px;
         }
 
-        header {
+        /* Header */
+        .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding-bottom: 16px;
+            justify-content: space-between;
+            padding: 16px 0;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
+            margin-bottom: 24px;
         }
 
         .brand {
@@ -62,15 +74,14 @@
         }
 
         .logo {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
         }
 
         .logo svg {
@@ -79,53 +90,22 @@
         }
 
         .brand-text h1 {
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
+            letter-spacing: -0.3px;
         }
 
         .brand-text p {
             font-size: 10px;
             color: var(--text-muted);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
             gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            padding: 4px 8px;
-            background: var(--surface);
-            border-radius: 4px;
-            border: 1px solid var(--border);
-        }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: var(--text-muted);
-        }
-
-        .status-dot.running {
-            background: var(--success);
-            box-shadow: 0 0 8px var(--success-glow);
-            animation: pulse 2s infinite;
-        }
-
-        .status-dot.stopped {
-            background: var(--danger);
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
         }
 
         .btn {
@@ -134,11 +114,14 @@
             border-radius: 4px;
             background: var(--surface);
             color: var(--text);
-            font-family: inherit;
-            font-size: 10px;
+            font-size: 11px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.15s;
-            white-space: nowrap;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .btn:hover {
@@ -146,75 +129,195 @@
             border-color: var(--text-muted);
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
         .btn-primary {
             background: var(--accent);
+            color: #000;
             border-color: var(--accent);
-            color: white;
+            font-weight: 600;
         }
 
         .btn-primary:hover {
-            background: #2563eb;
-            box-shadow: 0 0 12px var(--accent-glow);
+            background: #1db954;
+            border-color: #1db954;
         }
 
         .btn-danger {
-            border-color: var(--danger);
+            background: transparent;
             color: var(--danger);
+            border-color: var(--danger);
         }
 
         .btn-danger:hover {
-            background: var(--danger);
-            color: white;
+            background: rgba(239, 68, 68, 0.1);
         }
 
+        .btn-ghost {
+            background: transparent;
+            border-color: transparent;
+        }
+
+        .btn-ghost:hover {
+            background: var(--surface);
+        }
+
+        /* Login Modal */
+        .login-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-overlay.active {
+            display: flex;
+        }
+
+        .login-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 28px;
+            width: 320px;
+            max-width: 90vw;
+        }
+
+        .login-card h2 {
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 8px 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 12px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent);
+        }
+
+        .login-error {
+            font-size: 11px;
+            color: var(--danger);
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* Market Status */
+        .market-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent-glow);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-dot.closed {
+            background: var(--danger);
+            box-shadow: 0 0 6px var(--danger-glow);
+            animation: none;
+        }
+
+        .market-status-text {
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .market-status-sub {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .market-status-right {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .market-status-right .status-label {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .market-status-right .status-value {
+            font-size: 11px;
+            color: var(--text);
+        }
+
+        /* Metrics Grid */
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .metric-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 14px;
-            position: relative;
-            overflow: hidden;
+            padding: 12px 14px;
+            transition: border-color 0.2s;
         }
 
-        .metric-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .metric-card:hover::before {
-            opacity: 1;
+        .metric-card:hover {
+            border-color: var(--text-muted);
         }
 
         .metric-label {
-            font-size: 9px;
+            font-size: 10px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             margin-bottom: 4px;
         }
 
         .metric-value {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
-            font-family: var(--font-mono);
+            letter-spacing: -0.5px;
         }
 
         .metric-value.positive {
@@ -226,257 +329,253 @@
         }
 
         .metric-sub {
-            font-size: 9px;
+            font-size: 10px;
             color: var(--text-muted);
             margin-top: 2px;
         }
 
-        .admin-panel {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .admin-panel.visible {
-            display: block;
-        }
-
-        .admin-title {
-            font-size: 9px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .admin-buttons {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-        }
-
-        .admin-buttons .btn {
-            width: 100%;
-            text-align: center;
-        }
-
+        /* Section */
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .section-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             margin-bottom: 10px;
         }
 
         .section-title {
             font-size: 12px;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .section-count {
-            font-size: 10px;
-            color: var(--text-muted);
-            background: var(--surface);
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .table-container {
+        /* Table */
+        .table-wrapper {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
-            overflow: hidden;
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 11px;
         }
 
         th {
             text-align: left;
-            padding: 10px 12px;
-            font-size: 9px;
-            font-weight: 500;
+            padding: 8px 10px;
             color: var(--text-muted);
+            font-weight: 500;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             border-bottom: 1px solid var(--border);
-            background: var(--surface);
+            white-space: nowrap;
         }
 
         td {
-            padding: 10px 12px;
-            font-size: 12px;
-            border-bottom: 1px solid var(--border);
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(42, 42, 42, 0.5);
+            white-space: nowrap;
         }
 
         tr:last-child td {
             border-bottom: none;
         }
 
-        tr:hover {
+        tr:hover td {
             background: var(--surface-hover);
         }
 
-        .pnl-positive { color: var(--success); }
-        .pnl-negative { color: var(--danger); }
-
-        .empty-state {
-            padding: 24px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 11px;
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
 
-        .login-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
+        .badge-long {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
         }
 
-        .login-overlay.visible { display: flex; }
-
-        .login-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 24px;
-            width: 100%;
-            max-width: 320px;
-        }
-
-        .login-box h2 { font-size: 16px; margin-bottom: 6px; }
-        .login-box p { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; }
-
-        .login-box input {
-            width: 100%;
-            padding: 10px;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            color: var(--text);
-            font-family: inherit;
-            font-size: 13px;
-            margin-bottom: 10px;
-        }
-
-        .login-box input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-
-        .login-box .btn { width: 100%; }
-
-        .login-error {
+        .badge-short {
+            background: rgba(239, 68, 68, 0.15);
             color: var(--danger);
-            font-size: 11px;
-            margin-bottom: 10px;
-            display: none;
         }
 
-        .footer {
-            margin-top: 24px;
-            padding-top: 16px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 10px;
-            color: var(--text-muted);
-            flex-wrap: wrap;
-            gap: 8px;
+        .pnl-positive {
+            color: var(--success);
         }
 
-        .toast-container {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 2000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .pnl-negative {
+            color: var(--danger);
         }
 
-        .toast {
+        /* Chart container */
+        .chart-container {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 12px 16px;
-            font-size: 11px;
-            min-width: 200px;
-            max-width: 300px;
-            animation: slideIn 0.3s ease;
+            padding: 14px;
+            height: 180px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .toast.success { border-color: var(--success); }
-        .toast.error { border-color: var(--danger); }
-
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        canvas {
+            width: 100%;
+            height: 100%;
         }
 
-        .regime-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
+        /* Win/Loss Bar */
+        .wl-bar {
+            display: flex;
+            height: 24px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .wl-win {
+            background: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 10px;
-            background: var(--surface);
-            border: 1px solid var(--border);
+            font-weight: 600;
+            color: #000;
+            min-width: 30px;
         }
 
-        .regime-badge.trending { border-color: var(--success); color: var(--success); }
-        .regime-badge.choppy { border-color: var(--warning); color: var(--warning); }
+        .wl-loss {
+            background: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            color: #fff;
+            min-width: 30px;
+        }
 
-        @media (max-width: 600px) {
+        .wl-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 16px 0;
+            font-size: 10px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 24px;
+        }
+
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px 16px;
+            }
+
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 8px;
             }
-            .metric-value { font-size: 16px; }
-            .admin-buttons { grid-template-columns: 1fr; }
-            header { flex-direction: column; align-items: flex-start; }
-            .header-actions { width: 100%; justify-content: space-between; }
-            th, td { padding: 8px 6px; font-size: 10px; }
+
+            .metric-value {
+                font-size: 15px;
+            }
+
+            .header {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .table-wrapper {
+                font-size: 10px;
+            }
+
+            th, td {
+                padding: 6px 8px;
+            }
         }
 
-        @media (max-width: 400px) {
-            .metrics-grid { grid-template-columns: 1fr; }
+        @media (max-width: 480px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Sound toggle */
+        .sound-toggle {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 11px;
+            z-index: 2000;
+            animation: slideIn 0.2s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .toast.success {
+            border-color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
         }
     </style>
 </head>
 <body>
-    <div id="login-overlay" class="login-overlay">
-        <div class="login-box">
-            <h2>Admin Login</h2>
-            <p>Enter admin password to access controls.</p>
-            <input type="password" id="admin-password" placeholder="Admin Password" autofocus>
-            <div id="login-error" class="login-error">Invalid password</div>
-            <button class="btn btn-primary" onclick="adminLogin()">Login</button>
-            <button class="btn" onclick="closeLogin()" style="margin-top: 8px;">Cancel</button>
+    <!-- Login Overlay -->
+    <div class="login-overlay" id="loginOverlay">
+        <div class="login-card">
+            <h2>Admin Access</h2>
+            <div class="input-group">
+                <label>API Key</label>
+                <input type="password" id="apiKeyInput" placeholder="Enter admin key" autofocus>
+            </div>
+            <button class="btn btn-primary" onclick="login()">Login</button>
+            <div class="login-error" id="loginError">Invalid key</div>
         </div>
     </div>
 
-    <div class="toast-container" id="toast-container"></div>
-
-    <div class="container">
-        <header>
+    <!-- Main App -->
+    <div class="container" id="mainApp" style="display: none;">
+        <!-- Header -->
+        <header class="header">
             <div class="brand">
                 <div class="logo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -490,379 +589,507 @@
                 </div>
             </div>
             <div class="header-actions">
-                <div class="status-indicator">
-                    <div id="status-dot" class="status-dot stopped"></div>
-                    <span id="status-text">Stopped</span>
-                </div>
-                <span id="market-clock" style="font-size: 11px; color: var(--text-muted);">--:--:--</span>
-                <button class="btn" onclick="toggleFullscreen()" title="Fullscreen (F)">⛶</button>
-                <button class="btn" onclick="loadAll()" title="Refresh (R)">↻</button>
-                <button class="btn" id="admin-btn" onclick="openLogin()">Admin</button>
-                <button class="btn" id="logout-btn" onclick="adminLogout()" style="display: none;">Logout</button>
+                <span class="sound-toggle btn btn-ghost" id="soundToggle" onclick="toggleSound()">🔔</span>
+                <button class="btn btn-ghost" onclick="toggleFullscreen()">⛶</button>
+                <button class="btn btn-ghost" onclick="refresh()">⟳</button>
+                <button class="btn" onclick="startBot()">Start</button>
+                <button class="btn btn-danger" onclick="stopBot()">Stop</button>
             </div>
         </header>
 
-        <div class="admin-panel" id="admin-panel">
-            <div class="admin-title">Admin Controls</div>
-            <div class="admin-buttons">
-                <button class="btn btn-primary" onclick="startTrading()">▶ Start</button>
-                <button class="btn btn-danger" onclick="stopTrading()">■ Stop</button>
-                <button class="btn" onclick="closeAll()">✕ Close All</button>
-                <button class="btn" onclick="cancelAll()">✕ Cancel Orders</button>
+        <!-- Market Status -->
+        <div class="market-status">
+            <div class="status-dot" id="marketDot"></div>
+            <div>
+                <div class="market-status-text" id="marketStatus">Market Open</div>
+                <div class="market-status-sub" id="marketTime"></div>
+            </div>
+            <div class="market-status-right">
+                <div class="status-label">Last updated</div>
+                <div class="status-value" id="lastUpdate">—</div>
             </div>
         </div>
 
-        <div class="metrics-grid">
+        <!-- Key Metrics -->
+        <div class="metrics-grid" id="metricsGrid">
             <div class="metric-card">
-                <div class="metric-label">Portfolio</div>
-                <div class="metric-value" id="portfolio-value">--</div>
-                <div class="metric-sub" id="portfolio-change"></div>
+                <div class="metric-label">Total P&L</div>
+                <div class="metric-value" id="totalPnl">$0.00</div>
+                <div class="metric-sub">Realized</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Daily PnL</div>
-                <div class="metric-value" id="daily-pnl">--</div>
-                <div class="metric-sub" id="daily-pnl-pct"></div>
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value" id="winRate">0%</div>
+                <div class="metric-sub" id="winLoss">0 / 0</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Buying Power</div>
-                <div class="metric-value" id="buying-power">--</div>
+                <div class="metric-label">Closed Positions</div>
+                <div class="metric-value" id="closedCount">0</div>
+                <div class="metric-sub">Total trades</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Positions</div>
-                <div class="metric-value" id="active-positions">--</div>
-                <div class="metric-sub">Max 3</div>
+                <div class="metric-label">Avg P&L / Trade</div>
+                <div class="metric-value" id="avgPnl">$0.00</div>
+                <div class="metric-sub" id="avgWinLoss"></div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Total Trades</div>
-                <div class="metric-value" id="total-trades">--</div>
-                <div class="metric-sub" id="win-rate"></div>
+                <div class="metric-label">Open Positions</div>
+                <div class="metric-value" id="openCount">0</div>
+                <div class="metric-sub">Active</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Regime</div>
-                <div class="metric-value" id="regime" style="font-size: 14px;">--</div>
+                <div class="metric-label">Portfolio Value</div>
+                <div class="metric-value" id="portfolioValue">$0.00</div>
+                <div class="metric-sub" id="buyingPower"></div>
             </div>
         </div>
 
+        <!-- Two-Target Exit Plan -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Active Positions</span>
-                <span class="section-count" id="positions-count">0</span>
+                <span class="section-title">Two-Target Exit Plan</span>
             </div>
-            <div class="table-container">
+            <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="metric-card">
+                    <div class="metric-label">TP1 Hits</div>
+                    <div class="metric-value" id="tp1Hits">0</div>
+                    <div class="metric-sub" id="tp1Pnl">$0.00 realized</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">TP2 Completions</div>
+                    <div class="metric-value" id="tp2Hits">0</div>
+                    <div class="metric-sub" id="tp2Pnl">$0.00 realized</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">SL Hits</div>
+                    <div class="metric-value" id="slHits">0</div>
+                    <div class="metric-sub" id="slPnl">$0.00 lost</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Current Streak</div>
+                    <div class="metric-value" id="streak">—</div>
+                    <div class="metric-sub" id="streakLabel">No trades yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PnL Curve -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Today's P&L Curve</span>
+                <span style="font-size: 10px; color: var(--text-muted);" id="pnlCurveRange">—</span>
+            </div>
+            <div class="chart-container">
+                <canvas id="pnlChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Open Positions -->
+        <div class="section">
+            <div class="section-header">
+                <span class="section-title">Open Positions & Levels</span>
+            </div>
+            <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr><th>Symbol</th><th>Side</th><th>Entry</th><th>Current</th><th>Size</th><th>PnL</th></tr>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Side</th>
+                            <th>Shares</th>
+                            <th>Entry</th>
+                            <th>SL</th>
+                            <th>TP1</th>
+                            <th>TP2</th>
+                            <th>Current</th>
+                            <th>P&L</th>
+                        </tr>
                     </thead>
-                    <tbody id="positions-body">
-                        <tr><td colspan="6" class="empty-state">No active positions</td></tr>
+                    <tbody id="openPositionsTable">
+                        <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No open positions</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- By Symbol -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Pre-Market Scan</span>
-                <span class="section-count" id="scan-count">0</span>
+                <span class="section-title">By Symbol</span>
             </div>
-            <div class="table-container">
+            <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr><th>Symbol</th><th>Dir</th><th>Gap %</th><th>Vol</th><th>Score</th></tr>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Trades</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Win %</th>
+                            <th>P&L</th>
+                        </tr>
                     </thead>
-                    <tbody id="scan-body">
-                        <tr><td colspan="5" class="empty-state">No setups found</td></tr>
+                    <tbody id="symbolStatsTable">
+                        <tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- Trade Logs -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Weekly Summary</span>
+                <span class="section-title">Recent Trade Logs</span>
+                <button class="btn btn-ghost" onclick="clearLogs()">Clear</button>
             </div>
-            <div class="table-container">
+            <div class="table-wrapper">
                 <table>
                     <thead>
-                        <tr><th>Total</th><th>Wins</th><th>Losses</th><th>Win Rate</th><th>PnL</th></tr>
+                        <tr>
+                            <th>Time (ET)</th>
+                            <th>Symbol</th>
+                            <th>Event</th>
+                            <th>Side</th>
+                            <th>Price</th>
+                            <th>Shares</th>
+                            <th>P&L</th>
+                        </tr>
                     </thead>
-                    <tbody id="weekly-body">
-                        <tr><td colspan="5" class="empty-state">No trades yet</td></tr>
+                    <tbody id="tradeLogsTable">
+                        <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
+        <!-- Footer -->
         <div class="footer">
-            <span>Last updated: <span id="last-updated">--</span></span>
-            <span>Pulse V1 — Built for institutional execution</span>
+            <span>Pulse V1 — Institutional Footprint Strategy</span>
+            <span> | </span>
+            <a href="#" onclick="logout()">Logout</a>
         </div>
     </div>
 
+    <!-- Toast container -->
+    <div id="toastContainer"></div>
+
     <script>
-        const API_URL = localStorage.getItem('api_url') || 'https://alpaca-pulse-v1.onrender.com';
-        let adminKey = localStorage.getItem('admin_key') || null;
-        let audioCtx = null;
+        // State
+        let apiKey = localStorage.getItem('apiKey') || '';
+        let refreshInterval = null;
+        let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
+        let pnlChart = null;
 
-        function initAudio() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const API_BASE = 'https://alpaca-pulse-v1.onrender.com';
+
+        // Auth
+        function login() {
+            const key = document.getElementById('apiKeyInput').value;
+            if (!key) return;
+
+            fetch(`${API_BASE}/api/status`, {
+                headers: { 'X-Admin-Api-Key': key }
+            })
+            .then(r => {
+                if (r.ok) {
+                    apiKey = key;
+                    localStorage.setItem('apiKey', key);
+                    showApp();
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            })
+            .catch(() => {
+                document.getElementById('loginError').textContent = 'Cannot reach backend';
+                document.getElementById('loginError').style.display = 'block';
+            });
         }
 
-        function playNotification() {
-            initAudio();
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 800;
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 0.3);
+        function showApp() {
+            document.getElementById('loginOverlay').classList.remove('active');
+            document.getElementById('mainApp').style.display = 'block';
+            startRefreshing();
+            refresh();
         }
 
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+        function logout() {
+            apiKey = '';
+            localStorage.removeItem('apiKey');
+            stopRefreshing();
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('loginOverlay').classList.add('active');
+        }
+
+        // Refresh control
+        function startRefreshing() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(refresh, 15000);
+        }
+
+        function stopRefreshing() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+        }
+
+        // API calls
+        async function apiFetch(endpoint) {
+            const res = await fetch(`${API_BASE}${endpoint}`, {
+                headers: { 'X-Admin-Api-Key': apiKey }
+            });
+            if (res.status === 401) {
+                logout();
+                throw new Error('Unauthorized');
+            }
+            return res.json();
+        }
+
+        async function refresh() {
+            try {
+                const [status, positions, trades, closed, curve, clock, symbols, logs] = await Promise.all([
+                    apiFetch('/api/status'),
+                    apiFetch('/api/positions'),
+                    apiFetch('/api/trades'),
+                    apiFetch('/api/closed-positions'),
+                    apiFetch('/api/pnl-curve'),
+                    apiFetch('/api/clock'),
+                    apiFetch('/api/symbol-stats'),
+                    apiFetch('/api/trade-logs'),
+                ]);
+
+                updateDashboard({ status, positions, trades, closed, curve, clock, symbols, logs });
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            } catch (e) {
+                console.error('Refresh failed:', e);
+            }
+        }
+
+        function updateDashboard(data) {
+            const { status, positions, trades, closed, curve, clock, symbols, logs } = data;
+
+            // Market status
+            const marketOpen = status.status === 'running' && clock.market_open;
+            document.getElementById('marketDot').className = 'status-dot' + (marketOpen ? '' : ' closed');
+            document.getElementById('marketStatus').textContent = marketOpen ? 'Market Open' : 'Market Closed';
+            document.getElementById('marketTime').textContent = clock.time + ' | ' + clock.date;
+
+            // Key metrics
+            const totalPnl = closed.total_pnl || trades.total_pnl || 0;
+            const pnlEl = document.getElementById('totalPnl');
+            pnlEl.textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
+            pnlEl.className = 'metric-value ' + (totalPnl >= 0 ? 'positive' : 'negative');
+
+            document.getElementById('winRate').textContent = closed.win_rate ? closed.win_rate.toFixed(1) + '%' : '0%';
+            document.getElementById('winLoss').textContent = `${closed.wins || 0} / ${closed.losses || 0}`;
+            document.getElementById('closedCount').textContent = closed.total_closed || trades.total_trades || 0;
+            
+            const avgPnl = trades.total_pnl / Math.max(1, trades.total_trades);
+            const avgPnlEl = document.getElementById('avgPnl');
+            avgPnlEl.textContent = (avgPnl >= 0 ? '+' : '') + '$' + avgPnl.toFixed(2);
+            avgPnlEl.className = 'metric-value ' + (avgPnl >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('avgWinLoss').textContent = 
+                (trades.avg_win >= 0 ? '+' : '') + '$' + (trades.avg_win || 0).toFixed(2) + ' / ' + 
+                (trades.avg_loss >= 0 ? '+' : '') + '$' + (trades.avg_loss || 0).toFixed(2);
+
+            document.getElementById('openCount').textContent = positions.length;
+            document.getElementById('portfolioValue').textContent = '$' + (status.portfolio_value || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('buyingPower').textContent = 'BP: $' + (status.buying_power || 0).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+
+            // Open positions table
+            updateOpenPositions(positions);
+
+            // Symbol stats
+            updateSymbolStats(symbols);
+
+            // Trade logs
+            updateTradeLogs(logs);
+
+            // PnL curve
+            updatePnlCurve(curve);
+        }
+
+        function updateOpenPositions(positions) {
+            const tbody = document.getElementById('openPositionsTable');
+            if (!positions || positions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No open positions</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = positions.map(p => `
+                <tr>
+                    <td><strong>${p.symbol}</strong></td>
+                    <td><span class="badge badge-${p.side}">${p.side.toUpperCase()}</span></td>
+                    <td>${p.remaining || p.size}</td>
+                    <td>$${p.entry.toFixed(2)}</td>
+                    <td>$${p.sl.toFixed(2)}</td>
+                    <td>$${p.tp1.toFixed(2)}</td>
+                    <td>$${p.tp2.toFixed(2)}</td>
+                    <td>$${p.current_price.toFixed(2)}</td>
+                    <td class="${p.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${p.pnl >= 0 ? '+' : ''}$${p.pnl.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateSymbolStats(symbols) {
+            const tbody = document.getElementById('symbolStatsTable');
+            if (!symbols || symbols.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = symbols.map(s => `
+                <tr>
+                    <td><strong>${s.symbol}</strong></td>
+                    <td>${s.trades}</td>
+                    <td>${s.wins}</td>
+                    <td>${s.losses}</td>
+                    <td>${s.win_rate.toFixed(1)}%</td>
+                    <td class="${s.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${s.pnl >= 0 ? '+' : ''}$${s.pnl.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateTradeLogs(logs) {
+            const tbody = document.getElementById('tradeLogsTable');
+            if (!logs || logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = logs.slice(0, 20).map(l => {
+                const time = l.time ? new Date(l.time).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false}) : '—';
+                const event = l.event || '—';
+                const pnlClass = l.pnl > 0 ? 'pnl-positive' : l.pnl < 0 ? 'pnl-negative' : '';
+                return `
+                    <tr>
+                        <td>${time}</td>
+                        <td><strong>${l.symbol}</strong></td>
+                        <td>${event}</td>
+                        <td><span class="badge badge-${l.side && l.side.toLowerCase() === 'long' ? 'long' : 'short'}">${l.side ? l.side.toUpperCase() : '—'}</span></td>
+                        <td>${l.price ? '$' + l.price.toFixed(2) : '—'}</td>
+                        <td>${l.shares || '—'}</td>
+                        <td class="${pnlClass}">${l.pnl ? (l.pnl >= 0 ? '+' : '') + '$' + l.pnl.toFixed(2) : '—'}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updatePnlCurve(curve) {
+            const canvas = document.getElementById('pnlChart');
+            if (!canvas || !curve || curve.length === 0) {
+                if (canvas) {
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = canvas.parentElement.clientWidth;
+                    canvas.height = 150;
+                    ctx.fillStyle = 'var(--text-muted)';
+                    ctx.font = '11px -apple-system, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('No P&L data yet', canvas.width / 2, canvas.height / 2);
+                }
+                return;
+            }
+
+            // Draw simple line chart
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 150;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 10;
+
+            const values = curve.map(p => p.pnl);
+            const minVal = Math.min(0, ...values);
+            const maxVal = Math.max(0, ...values);
+            const range = maxVal - minVal || 1;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Background
+            ctx.fillStyle = 'var(--surface)';
+            ctx.fillRect(0, 0, width, height);
+
+            // Grid
+            ctx.strokeStyle = 'var(--border)';
+            ctx.lineWidth = 0.5;
+            for (let i = 1; i < 5; i++) {
+                const y = padding + (height - 2 * padding) * i / 5;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+
+            // P&L line
+            ctx.strokeStyle = 'var(--accent)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            curve.forEach((p, i) => {
+                const x = padding + (width - 2 * padding) * i / Math.max(1, curve.length - 1);
+                const y = height - padding - (p.pnl - minVal) / range * (height - 2 * padding);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = 'var(--text-muted)';
+            ctx.font = '10px -apple-system, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('$' + minVal.toFixed(2), padding, height - 2);
+            ctx.fillText('$' + maxVal.toFixed(2), padding, 12);
+
+            document.getElementById('pnlCurveRange').textContent = `${curve[0].time} — ${curve[curve.length-1].time}`;
+        }
+
+        // Bot controls
+        async function startBot() {
+            await apiFetch('/api/start');
+            showToast('Bot started', 'success');
+        }
+
+        async function stopBot() {
+            await apiFetch('/api/stop');
+            showToast('Bot stopped', 'error');
         }
 
         function toggleFullscreen() {
             document.body.classList.toggle('fullscreen');
         }
 
-        function openLogin() {
-            document.getElementById('login-overlay').classList.add('visible');
-            document.getElementById('admin-password').focus();
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('soundEnabled', soundEnabled);
+            document.getElementById('soundToggle').textContent = soundEnabled ? '🔔' : '🔕';
         }
 
-        function closeLogin() {
-            document.getElementById('login-overlay').classList.remove('visible');
-            document.getElementById('login-error').style.display = 'none';
+        function clearLogs() {
+            document.getElementById('tradeLogsTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Logs cleared</td></tr>';
         }
 
-        function adminLogin() {
-            const password = document.getElementById('admin-password').value.trim();
-            if (password) {
-                adminKey = password;
-                localStorage.setItem('admin_key', password);
-                closeLogin();
-                showAdminControls();
-                showToast('Logged in successfully', 'success');
-            } else {
-                document.getElementById('login-error').style.display = 'block';
-            }
+        // Toast notifications
+        function showToast(message, type = '') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        function adminLogout() {
-            adminKey = null;
-            localStorage.removeItem('admin_key');
-            hideAdminControls();
-            showToast('Logged out', 'info');
-        }
-
-        function showAdminControls() {
-            document.getElementById('admin-panel').classList.add('visible');
-            document.getElementById('admin-btn').style.display = 'none';
-            document.getElementById('logout-btn').style.display = 'inline-block';
-        }
-
-        function hideAdminControls() {
-            document.getElementById('admin-panel').classList.remove('visible');
-            document.getElementById('admin-btn').style.display = 'inline-block';
-            document.getElementById('logout-btn').style.display = 'none';
-        }
-
-        if (adminKey) showAdminControls();
-
-        document.getElementById('admin-password').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') adminLogin();
+        // Enter key for login
+        document.getElementById('apiKeyInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') login();
         });
 
-        async function apiGet(endpoint) {
-            try {
-                const headers = {};
-                if (adminKey) headers['Authorization'] = `Bearer ${adminKey}`;
-                const resp = await fetch(`${API_URL}${endpoint}`, { headers });
-                if (resp.status === 401) { adminLogout(); return null; }
-                return await resp.json();
-            } catch (e) { return null; }
+        // Init
+        if (apiKey) {
+            showApp();
+        } else {
+            document.getElementById('loginOverlay').classList.add('active');
         }
-
-        async function apiPost(endpoint) {
-            try {
-                const headers = {};
-                if (adminKey) headers['Authorization'] = `Bearer ${adminKey}`;
-                const resp = await fetch(`${API_URL}${endpoint}`, { method: 'POST', headers });
-                if (resp.status === 401) { alert('Unauthorized'); adminLogout(); return null; }
-                return await resp.json();
-            } catch (e) { return null; }
-        }
-
-        function formatCurrency(val) {
-            if (val === undefined || val === null) return '--';
-            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 }).format(val);
-        }
-
-        function formatPercent(val) {
-            if (val === undefined || val === null) return '--';
-            return (val * 100).toFixed(2) + '%';
-        }
-
-        let lastPositionsCount = 0;
-
-        async function loadStatus() {
-            const data = await apiGet('/api/status');
-            if (!data) return;
-
-            const dot = document.getElementById('status-dot');
-            const text = document.getElementById('status-text');
-            
-            if (data.status === 'running') {
-                dot.className = 'status-dot running';
-                text.textContent = 'Running';
-            } else {
-                dot.className = 'status-dot stopped';
-                text.textContent = 'Stopped';
-            }
-
-            document.getElementById('portfolio-value').textContent = formatCurrency(data.portfolio_value);
-            
-            const pnl = document.getElementById('daily-pnl');
-            pnl.textContent = formatCurrency(data.daily_pnl);
-            pnl.className = `metric-value ${data.daily_pnl >= 0 ? 'positive' : 'negative'}`;
-            
-            document.getElementById('buying-power').textContent = formatCurrency(data.buying_power);
-            document.getElementById('active-positions').textContent = data.active_positions;
-            document.getElementById('total-trades').textContent = data.total_trades;
-            document.getElementById('mode').textContent = data.mode.toUpperCase();
-        }
-
-        async function loadPositions() {
-            const data = await apiGet('/api/positions');
-            const tbody = document.getElementById('positions-body');
-            document.getElementById('positions-count').textContent = data ? data.length : 0;
-            
-            if (data && data.length > lastPositionsCount && lastPositionsCount > 0) {
-                playNotification();
-                showToast(`New position opened!`, 'success');
-            }
-            lastPositionsCount = data ? data.length : 0;
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No active positions</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(p => `
-                <tr>
-                    <td><strong>${p.symbol}</strong></td>
-                    <td>${p.side}</td>
-                    <td>${formatCurrency(p.entry)}</td>
-                    <td>${formatCurrency(p.current_price)}</td>
-                    <td>${p.size}</td>
-                    <td class="${p.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(p.pnl)}</td>
-                </tr>
-            `).join('');
-        }
-
-        async function loadScan() {
-            const data = await apiGet('/api/scan');
-            const tbody = document.getElementById('scan-body');
-            document.getElementById('scan-count').textContent = data ? data.length : 0;
-            
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No setups found</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(s => `
-                <tr>
-                    <td><strong>${s.symbol}</strong></td>
-                    <td>${s.direction?.toUpperCase() || '--'}</td>
-                    <td>${s.gap_pct ? (s.gap_pct * 100).toFixed(2) + '%' : '--'}</td>
-                    <td>${s.pm_volume?.toLocaleString() || '--'}</td>
-                    <td>${s.score || '--'}</td>
-                </tr>
-            `).join('');
-        }
-
-        async function loadWeekly() {
-            const data = await apiGet('/api/weekly');
-            const tbody = document.getElementById('weekly-body');
-            
-            if (!data || data.total_trades === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No trades yet</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = `
-                <tr>
-                    <td>${data.total_trades}</td>
-                    <td>${data.wins}</td>
-                    <td>${data.losses}</td>
-                    <td>${data.win_rate?.toFixed(0) || 0}%</td>
-                    <td class="${data.total_pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${formatCurrency(data.total_pnl)}</td>
-                </tr>
-            `;
-        }
-
-        async function loadRegime() {
-            const data = await apiGet('/api/journal');
-            const regime = document.getElementById('regime');
-            const winRate = document.getElementById('win-rate');
-            
-            if (data && data.total_trades > 0) {
-                winRate.textContent = `${data.win_rate?.toFixed(0) || 0}% win rate`;
-            }
-        }
-
-        async function loadClock() {
-            const data = await apiGet('/api/clock');
-            if (!data) return;
-            const clock = document.getElementById('market-clock');
-            const isOpen = data.is_open ? 'Open' : 'Closed';
-            clock.textContent = `Market: ${isOpen}`;
-        }
-
-        async function startTrading() {
-            if (!confirm('Start trading?')) return;
-            await apiPost('/api/start');
-            showToast('Trading started!', 'success');
-            loadAll();
-        }
-
-        async function stopTrading() {
-            if (!confirm('Stop trading?')) return;
-            await apiPost('/api/stop');
-            showToast('Trading stopped', 'info');
-            loadAll();
-        }
-
-        async function closeAll() {
-            if (!confirm('Close all positions?')) return;
-            await apiPost('/api/close-all');
-            showToast('All positions closed', 'success');
-            loadAll();
-        }
-
-        async function cancelAll() {
-            if (!confirm('Cancel all orders?')) return;
-            await apiPost('/api/cancel-all');
-            showToast('All orders cancelled', 'info');
-            loadAll();
-        }
-
-        async function loadAll() {
-            await Promise.all([loadStatus(), loadPositions(), loadScan(), loadWeekly(), loadRegime(), loadClock()]);
-            document.getElementById('last-updated').textContent = new Date().toLocaleString();
-        }
-
-        setInterval(loadAll, 15000);
-        loadAll();
     </script>
 </body>
 </html>
