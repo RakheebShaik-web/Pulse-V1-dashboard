@@ -789,6 +789,7 @@
             const key = document.getElementById('apiKeyInput').value;
             if (!key) return;
 
+            // Try with the key
             fetch(`${API_BASE}/api/status`, {
                 headers: { 'X-Admin-Api-Key': key }
             })
@@ -798,7 +799,18 @@
                     localStorage.setItem('apiKey', key);
                     showApp();
                 } else {
-                    document.getElementById('loginError').style.display = 'block';
+                    // Try without key (if admin key not set on backend)
+                    fetch(`${API_BASE}/api/status`)
+                    .then(r2 => {
+                        if (r2.ok) {
+                            apiKey = '';
+                            localStorage.setItem('apiKey', '');
+                            showApp();
+                        } else {
+                            document.getElementById('loginError').textContent = 'Invalid key';
+                            document.getElementById('loginError').style.display = 'block';
+                        }
+                    });
                 }
             })
             .catch(() => {
