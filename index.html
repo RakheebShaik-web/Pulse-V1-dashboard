@@ -789,7 +789,6 @@
             const key = document.getElementById('apiKeyInput').value;
             if (!key) return;
 
-            // Try with the key
             fetch(`${API_BASE}/api/status`, {
                 headers: { 'X-Admin-Api-Key': key }
             })
@@ -798,19 +797,23 @@
                     apiKey = key;
                     localStorage.setItem('apiKey', key);
                     showApp();
-                } else {
-                    // Try without key (if admin key not set on backend)
+                } else if (r.status === 401) {
+                    // Try without key (backend may not have admin key set)
                     fetch(`${API_BASE}/api/status`)
                     .then(r2 => {
                         if (r2.ok) {
                             apiKey = '';
                             localStorage.setItem('apiKey', '');
+                            showToast('No admin key set on backend — logged in without auth');
                             showApp();
                         } else {
                             document.getElementById('loginError').textContent = 'Invalid key';
                             document.getElementById('loginError').style.display = 'block';
                         }
                     });
+                } else {
+                    document.getElementById('loginError').textContent = 'Backend error: ' + r.status;
+                    document.getElementById('loginError').style.display = 'block';
                 }
             })
             .catch(() => {
@@ -849,7 +852,13 @@
 
         // API calls
         async function apiFetch(endpoint) {
-            const res = await fetch(`${API_BASE}${endpoint}`);
+            const res = await fetch(`${API_BASE}${endpoint}`, {
+                headers: { 'X-Admin-Api-Key': apiKey }
+            });
+            if (res.status === 401) {
+                logout();
+                throw new Error('Unauthorized');
+            }
             return res.json();
         }
 
@@ -1099,9 +1108,12 @@
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
-        // Init - no auth needed
-        apiKey = '';
-        showApp();
+        // Init
+        if (apiKey) {
+            showApp();
+        } else {
+            document.getElementById('loginOverlay').classList.add('active');
+        }
     </script>
 </body>
 </html>
