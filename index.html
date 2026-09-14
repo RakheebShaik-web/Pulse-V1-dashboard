@@ -849,13 +849,7 @@
 
         // API calls
         async function apiFetch(endpoint) {
-            const res = await fetch(`${API_BASE}${endpoint}`, {
-                headers: { 'X-Admin-Api-Key': apiKey }
-            });
-            if (res.status === 401) {
-                logout();
-                throw new Error('Unauthorized');
-            }
+            const res = await fetch(`${API_BASE}${endpoint}`);
             return res.json();
         }
 
@@ -1105,12 +1099,9 @@
             input.type = input.type === 'password' ? 'text' : 'password';
         }
 
-        // Init
-        if (apiKey) {
-            showApp();
-        } else {
-            document.getElementById('loginOverlay').classList.add('active');
-        }
+        // Init - no auth needed
+        apiKey = '';
+        showApp();
     </script>
 </body>
 </html>
