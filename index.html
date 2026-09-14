@@ -565,7 +565,10 @@
             <h2>Admin Access</h2>
             <div class="input-group">
                 <label>API Key</label>
-                <input type="password" id="apiKeyInput" placeholder="Enter admin key" autofocus>
+                <div style="position: relative;">
+                    <input type="password" id="apiKeyInput" placeholder="Enter admin key" autofocus>
+                    <button type="button" onclick="togglePassword()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px;">👁</button>
+                </div>
             </div>
             <button class="btn btn-primary" onclick="login()">Login</button>
             <div class="login-error" id="loginError">Invalid key</div>
@@ -1083,6 +1086,12 @@
         document.getElementById('apiKeyInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') login();
         });
+
+        // Toggle password visibility
+        function togglePassword() {
+            const input = document.getElementById('apiKeyInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
 
         // Init
         if (apiKey) {
