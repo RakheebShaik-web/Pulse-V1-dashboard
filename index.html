@@ -948,7 +948,10 @@
             if (!apiKey) { openAdminLogin(); throw new Error('Admin key required'); }
             const res = await fetch(`${API_BASE}${endpoint}`, {method: 'POST', headers: {'X-Admin-Api-Key': apiKey}});
             if (res.status === 401 || res.status === 403) { logout(); openAdminLogin(); throw new Error('Admin key rejected'); }
-            if (!res.ok) throw new Error(`Admin action failed: ${res.status}`);
+            if (!res.ok) {
+                const payload = await res.json().catch(() => ({}));
+                throw new Error(payload.detail || `Admin action failed: ${res.status}`);
+            }
             return res.json();
         }
 
@@ -1181,12 +1184,16 @@
 
         // Bot controls
         async function startBot() {
-            const result = await adminFetch('/api/start');
-            document.getElementById('botDot').className = 'status-dot';
-            document.getElementById('botStatus').textContent = 'Bot Running';
-            document.getElementById('botDetail').textContent = `New entries enabled · ${result.mode || 'paper'}`;
-            showToast('Bot started', 'success');
-            await refresh();
+            try {
+                const result = await adminFetch('/api/start');
+                document.getElementById('botDot').className = 'status-dot';
+                document.getElementById('botStatus').textContent = 'Bot Running';
+                document.getElementById('botDetail').textContent = `New entries enabled · ${result.mode || 'paper'}`;
+                showToast('Bot started', 'success');
+                await refresh();
+            } catch (error) {
+                showToast(error.message, 'error');
+            }
         }
 
         async function stopBot() {
