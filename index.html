@@ -1126,13 +1126,21 @@
 
         // Bot controls
         async function startBot() {
-            await adminFetch('/api/start');
+            const result = await adminFetch('/api/start');
+            document.getElementById('botDot').className = 'status-dot';
+            document.getElementById('botStatus').textContent = 'Bot Running';
+            document.getElementById('botDetail').textContent = `New entries enabled · ${result.mode || 'paper'}`;
             showToast('Bot started', 'success');
+            await refresh();
         }
 
         async function stopBot() {
             await adminFetch('/api/stop');
+            document.getElementById('botDot').className = 'status-dot closed';
+            document.getElementById('botStatus').textContent = 'Bot Stopped';
+            document.getElementById('botDetail').textContent = 'New entries disabled';
             showToast('Bot stopped', 'error');
+            await refresh();
         }
 
         async function cancelAllOrders() {
