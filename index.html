@@ -630,6 +630,21 @@
             #metricsGrid .metric-card:nth-child(odd) { border-right: 1px solid var(--border); }
             #metricsGrid .metric-card:nth-child(even) { border-right: 0; }
         }
+        .symbol-section { border-top: 1px solid var(--border); padding-top: 30px; }
+        .symbol-section .section-header { margin-bottom: 30px; }
+        .symbol-section .table-wrapper { background: transparent; border: 0; border-radius: 0; }
+        .symbol-section table { font-size: 14px; }
+        .symbol-section th, .symbol-section td { text-align: center; border-bottom: 1px solid var(--border); }
+        .symbol-section th { background: transparent; font-family: var(--font-mono); padding: 14px 12px; }
+        .symbol-section td { padding: 22px 12px; font-family: var(--font-mono); }
+        .symbol-section th:first-child, .symbol-section td:first-child { text-align: left; width: 16%; }
+        .symbol-section th:last-child, .symbol-section td:last-child { text-align: right; }
+        .symbol-section td:last-child { font-weight: 600; }
+        .symbol-section .symbol-gain { background: linear-gradient(90deg, transparent 16%, rgba(104,185,138,.20) 16%, transparent 80%); }
+        .symbol-section .symbol-loss { background: linear-gradient(90deg, transparent 16%, rgba(212,119,119,.19) 16%, transparent 80%); }
+        .symbol-section tr:hover td { background: rgba(201,178,124,.07); }
+        .sample-count { color: var(--text-muted); font-size: 11px; }
+        #symbolSort { color: var(--text-muted); font-family: var(--font-mono); padding-right: 0; }
     </style>
 </head>
 <body>
@@ -801,9 +816,9 @@
         </div>
 
         <!-- By Symbol -->
-        <div class="section">
+        <div class="section symbol-section">
             <div class="section-header">
-                <span class="section-title">Instrument attribution</span>
+                <span class="section-title">By Symbol</span>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -814,7 +829,7 @@
                             <th>Wins</th>
                             <th>Losses</th>
                             <th>Win %</th>
-                            <th>P&L</th>
+                            <th id="symbolPnlHeader" aria-sort="descending"><button class="btn btn-ghost" id="symbolSort" onclick="toggleSymbolSort()">P&amp;L ↓</button></th>
                         </tr>
                     </thead>
                     <tbody id="symbolStatsTable">
@@ -1055,21 +1070,30 @@
             `).join('');
         }
 
+        let symbolRows = [];
+        let symbolSortDescending = true;
+        function toggleSymbolSort() {
+            symbolSortDescending = !symbolSortDescending;
+            document.getElementById('symbolSort').textContent = 'P&L ' + (symbolSortDescending ? '↓' : '↑');
+            document.getElementById('symbolPnlHeader').setAttribute('aria-sort', symbolSortDescending ? 'descending' : 'ascending');
+            updateSymbolStats(symbolRows);
+        }
         function updateSymbolStats(symbols) {
+            symbolRows = symbols || [];
             const tbody = document.getElementById('symbolStatsTable');
             if (!symbols || symbols.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No trades yet</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = symbols.map(s => `
-                <tr>
+            tbody.innerHTML = [...symbols].sort((a, b) => symbolSortDescending ? b.pnl - a.pnl : a.pnl - b.pnl).map(s => `
+                <tr class="${s.pnl > 0 ? 'symbol-gain' : s.pnl < 0 ? 'symbol-loss' : ''}">
                     <td><strong>${s.symbol}</strong></td>
                     <td>${s.trades}</td>
                     <td>${s.wins}</td>
                     <td>${s.losses}</td>
-                    <td>${s.win_rate.toFixed(1)}%</td>
-                    <td class="${s.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${s.pnl >= 0 ? '+' : ''}$${s.pnl.toFixed(2)}</td>
+                    <td>${s.win_rate.toFixed(1)}% <span class="sample-count">(n=${s.trades})</span></td>
+                    <td class="${s.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${s.pnl >= 0 ? '+' : '-'}$${Math.abs(s.pnl).toFixed(2)}</td>
                 </tr>
             `).join('');
         }
