@@ -1101,15 +1101,17 @@
                 const time = l.time_et || (l.time ? new Date(l.time).toLocaleTimeString('en-US', {timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit'}) : '—');
                 const event = l.event || '—';
                 const pnlClass = l.pnl > 0 ? 'pnl-positive' : l.pnl < 0 ? 'pnl-negative' : '';
+                const side = (l.side || '').toLowerCase();
+                const sideColor = side === 'buy' || side === 'long' ? 'buy' : 'sell';
                 return `
                     <tr>
                         <td>${time}</td>
                         <td><strong>${l.symbol}</strong></td>
                         <td>${event}</td>
-                        <td><span class="badge badge-${l.side && l.side.toLowerCase() === 'long' ? 'long' : 'short'}">${l.side ? l.side.toUpperCase() : '—'}</span></td>
+                        <td><span class="badge badge-${sideColor}">${l.side ? l.side.toUpperCase() : '—'}</span></td>
                         <td>${l.price ? '$' + l.price.toFixed(2) : '—'}</td>
                         <td>${l.shares || '—'}</td>
-                        <td class="${pnlClass}">${l.pnl ? (l.pnl >= 0 ? '+' : '') + '$' + l.pnl.toFixed(2) : '—'}</td>
+                        <td class="${pnlClass}">${Number.isFinite(Number(l.pnl)) ? (Number(l.pnl) >= 0 ? '+' : '') + '$' + Number(l.pnl).toFixed(2) : '—'}</td>
                     </tr>
                 `;
             }).join('');
