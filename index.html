@@ -554,6 +554,17 @@
             --success: #68b98a; --success-glow: rgba(104,185,138,.22);
             --danger: #d47777; --danger-glow: rgba(212,119,119,.2); --warning: #c9b27c;
         }
+        html[data-theme="light"] {
+            --bg: #f3f1ec; --surface: #faf9f6; --surface-hover: #eeece6;
+            --border: #d5d1c7; --text: #171a1e; --text-muted: #68717a;
+            --accent: #856f3f; --accent-glow: transparent;
+            --success: #28734a; --success-glow: transparent;
+            --danger: #a33f43; --danger-glow: transparent;
+        }
+        html[data-theme="light"] body { background: #f3f1ec; }
+        html[data-theme="light"] body::before { opacity: .025; filter: invert(1); }
+        html[data-theme="light"] .table-wrapper,
+        html[data-theme="light"] .chart-container { background: rgba(250,249,246,.82); }
         body {
             font-family: Aptos, 'Segoe UI Variable', 'Segoe UI', sans-serif;
             background: radial-gradient(circle at 76% -15%, rgba(83,96,108,.14), transparent 32rem), var(--bg);
@@ -655,6 +666,7 @@
             <div class="header-actions">
                 <button class="sound-toggle btn btn-ghost" id="soundToggle" onclick="toggleSound()">Alerts on</button>
                 <button class="btn btn-ghost" onclick="refresh()">Refresh</button>
+                <button class="btn btn-ghost" id="themeToggle" onclick="toggleTheme()">Light theme</button>
                 <button class="btn btn-ghost" id="adminButton" onclick="openAdminLogin()">Admin</button>
                 <button class="btn admin-only" onclick="startBot()">Start</button>
                 <button class="btn btn-danger admin-only" onclick="stopBot()">Stop</button>
@@ -853,6 +865,10 @@
         let refreshInterval = null;
         let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
         let pnlChart = null;
+
+        const savedTheme = localStorage.getItem('theme');
+        const initialTheme = savedTheme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.dataset.theme = initialTheme;
 
         const API_BASE = 'https://alpaca-pulse-v1.onrender.com';
 
@@ -1209,6 +1225,19 @@
             document.getElementById('soundToggle').textContent = soundEnabled ? 'Alerts on' : 'Alerts off';
         }
 
+        function toggleTheme() {
+            const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
+            document.documentElement.dataset.theme = next;
+            localStorage.setItem('theme', next);
+            document.getElementById('themeToggle').textContent = next === 'light' ? 'Dark theme' : 'Light theme';
+            updateThemeLabel();
+        }
+
+        function updateThemeLabel() {
+            const current = document.documentElement.dataset.theme;
+            document.getElementById('themeToggle').textContent = current === 'light' ? 'Dark theme' : 'Light theme';
+        }
+
         function clearLogs() {
             document.getElementById('tradeLogsTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Logs cleared</td></tr>';
         }
@@ -1227,6 +1256,7 @@
         document.getElementById('apiKeyInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') login();
         });
+        updateThemeLabel();
 
         // Toggle password visibility
         function togglePassword() {
