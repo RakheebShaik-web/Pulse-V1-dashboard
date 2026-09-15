@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Pulse V1 private-client portfolio and execution dashboard">
     <title>Pulse V1 — Private Client Trading</title>
     <style>
@@ -645,6 +645,30 @@
         .symbol-section tr:hover td { background: rgba(201,178,124,.07); }
         .sample-count { color: var(--text-muted); font-size: 11px; }
         #symbolSort { color: var(--text-muted); font-family: var(--font-mono); padding-right: 0; }
+        .performance-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 40px; margin-bottom: 48px; }
+        .performance-layout .section { margin: 0; min-width: 0; }
+        .performance-layout .exit-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; border: 0; }
+        .performance-layout .exit-metrics .metric-card { padding: 22px 16px 22px 0; background: transparent; border: 0; border-top: 1px solid var(--border); }
+        .performance-layout .chart-container { height: 235px; border-left: 0; border-right: 0; background: transparent; }
+        .section-header { gap: 16px; flex-wrap: wrap; }
+        .section-header .admin-only { gap: 8px; flex-wrap: wrap; }
+        .metric-sub, .market-status-sub { font-size: 11px; line-height: 1.6; }
+        .section-title { font-size: 17px; font-weight: 600; }
+        .header-actions .btn { min-height: 36px; }
+        .table-wrapper { border-left: 0; border-right: 0; }
+        th, td { padding-top: 17px; padding-bottom: 17px; }
+        td[colspan] { padding: 32px 16px; }
+        .market-status { margin-bottom: 30px; }
+        body::before { display: none; }
+        .status-dot.closed { box-shadow: none; }
+        .footer { text-align: left; letter-spacing: .025em; padding-top: 22px; }
+        @media (max-width: 768px) {
+            .performance-layout { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+            .header-actions { flex-wrap: wrap; overflow: visible; }
+            #metricsGrid .metric-card { padding: 18px 12px; }
+            #metricsGrid .metric-card:first-child .metric-value { font-size: 27px; }
+            .symbol-section td { padding: 17px 12px; }
+        }
     </style>
 </head>
 <body>
@@ -743,12 +767,13 @@
             </div>
         </div>
 
+        <div class="performance-layout">
         <!-- Two-Target Exit Plan -->
         <div class="section">
             <div class="section-header">
                 <span class="section-title">Exit discipline</span>
             </div>
-            <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="metrics-grid exit-metrics">
                 <div class="metric-card">
                     <div class="metric-label">TP1 Hits</div>
                     <div class="metric-value" id="tp1Hits">0</div>
@@ -783,6 +808,7 @@
             </div>
         </div>
 
+        </div>
         <!-- Open Positions -->
         <div class="section">
             <div class="section-header">
@@ -1142,13 +1168,14 @@
         }
 
         function updatePnlCurve(curve) {
+            const colors = getComputedStyle(document.documentElement);
             const canvas = document.getElementById('pnlChart');
             if (!canvas || !curve || curve.length === 0) {
                 if (canvas) {
                     const ctx = canvas.getContext('2d');
                     canvas.width = canvas.parentElement.clientWidth;
                     canvas.height = 150;
-                    ctx.fillStyle = 'var(--text-muted)';
+                    ctx.fillStyle = colors.getPropertyValue('--text-muted').trim();
                     ctx.font = '11px -apple-system, sans-serif';
                     ctx.textAlign = 'center';
                     ctx.fillText('No P&L data yet', canvas.width / 2, canvas.height / 2);
@@ -1173,11 +1200,11 @@
             ctx.clearRect(0, 0, width, height);
 
             // Background
-            ctx.fillStyle = 'var(--surface)';
+            ctx.fillStyle = colors.getPropertyValue('--surface').trim();
             ctx.fillRect(0, 0, width, height);
 
             // Grid
-            ctx.strokeStyle = 'var(--border)';
+            ctx.strokeStyle = colors.getPropertyValue('--border').trim();
             ctx.lineWidth = 0.5;
             for (let i = 1; i < 5; i++) {
                 const y = padding + (height - 2 * padding) * i / 5;
@@ -1188,7 +1215,7 @@
             }
 
             // P&L line
-            ctx.strokeStyle = 'var(--accent)';
+            ctx.strokeStyle = colors.getPropertyValue('--accent').trim();
             ctx.lineWidth = 2;
             ctx.beginPath();
 
@@ -1201,7 +1228,7 @@
             ctx.stroke();
 
             // Labels
-            ctx.fillStyle = 'var(--text-muted)';
+            ctx.fillStyle = colors.getPropertyValue('--text-muted').trim();
             ctx.font = '10px -apple-system, sans-serif';
             ctx.textAlign = 'left';
             ctx.fillText('$' + minVal.toFixed(2), padding, height - 2);
