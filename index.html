@@ -571,6 +571,7 @@
                 </div>
             </div>
             <button class="btn btn-primary" onclick="login()">Login</button>
+            <button class="btn btn-ghost" onclick="closeAdminLogin()">Cancel</button>
             <div class="login-error" id="loginError">Invalid key</div>
         </div>
     </div>
@@ -595,6 +596,7 @@
                 <span class="sound-toggle btn btn-ghost" id="soundToggle" onclick="toggleSound()">🔔</span>
                 <button class="btn btn-ghost" onclick="toggleFullscreen()">⛶</button>
                 <button class="btn btn-ghost" onclick="refresh()">⟳</button>
+                <button class="btn btn-ghost" id="adminButton" onclick="openAdminLogin()">Admin</button>
                 <button class="btn" onclick="startBot()">Start</button>
                 <button class="btn btn-danger" onclick="stopBot()">Stop</button>
             </div>
@@ -778,7 +780,7 @@
 
     <script>
         // State
-        let apiKey = localStorage.getItem('apiKey') || '';
+        let apiKey = '';
         let refreshInterval = null;
         let soundEnabled = localStorage.getItem('soundEnabled') !== 'false';
         let pnlChart = null;
@@ -790,28 +792,18 @@
             const key = document.getElementById('apiKeyInput').value;
             if (!key) return;
 
-            fetch(`${API_BASE}/api/status`, {
+            fetch(`${API_BASE}/api/admin/verify`, {
                 headers: { 'X-Admin-Api-Key': key }
             })
             .then(r => {
                 if (r.ok) {
                     apiKey = key;
-                    localStorage.setItem('apiKey', key);
+                    document.getElementById('apiKeyInput').value = '';
+                    document.getElementById('adminButton').textContent = 'Admin unlocked';
                     showApp();
                 } else if (r.status === 401) {
-                    // Try without key (backend may not have admin key set)
-                    fetch(`${API_BASE}/api/status`)
-                    .then(r2 => {
-                        if (r2.ok) {
-                            apiKey = '';
-                            localStorage.setItem('apiKey', '');
-                            showToast('No admin key set on backend — logged in without auth');
-                            showApp();
-                        } else {
-                            document.getElementById('loginError').textContent = 'Invalid key';
-                            document.getElementById('loginError').style.display = 'block';
-                        }
-                    });
+                    document.getElementById('loginError').textContent = 'Invalid key';
+                    document.getElementById('loginError').style.display = 'block';
                 } else {
                     document.getElementById('loginError').textContent = 'Backend error: ' + r.status;
                     document.getElementById('loginError').style.display = 'block';
@@ -830,12 +822,19 @@
             refresh();
         }
 
+        function openAdminLogin() {
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('loginOverlay').classList.add('active');
+        }
+
+        function closeAdminLogin() {
+            document.getElementById('apiKeyInput').value = '';
+            document.getElementById('loginOverlay').classList.remove('active');
+        }
+
         function logout() {
             apiKey = '';
-            localStorage.removeItem('apiKey');
-            stopRefreshing();
-            document.getElementById('mainApp').style.display = 'none';
-            document.getElementById('loginOverlay').classList.add('active');
+            document.getElementById('adminButton').textContent = 'Admin';
         }
 
         // Refresh control
@@ -853,13 +852,16 @@
 
         // API calls
         async function apiFetch(endpoint) {
-            const res = await fetch(`${API_BASE}${endpoint}`, {
-                headers: { 'X-Admin-Api-Key': apiKey }
-            });
-            if (res.status === 401) {
-                logout();
-                throw new Error('Unauthorized');
-            }
+            const res = await fetch(`${API_BASE}${endpoint}`);
+            if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+            return res.json();
+        }
+
+        async function adminFetch(endpoint) {
+            if (!apiKey) { openAdminLogin(); throw new Error('Admin key required'); }
+            const res = await fetch(`${API_BASE}${endpoint}`, {method: 'POST', headers: {'X-Admin-Api-Key': apiKey}});
+            if (res.status === 401 || res.status === 403) { logout(); openAdminLogin(); throw new Error('Admin key rejected'); }
+            if (!res.ok) throw new Error(`Admin action failed: ${res.status}`);
             return res.json();
         }
 
@@ -1081,12 +1083,12 @@
 
         // Bot controls
         async function startBot() {
-            await apiFetch('/api/start');
+            await adminFetch('/api/start');
             showToast('Bot started', 'success');
         }
 
         async function stopBot() {
-            await apiFetch('/api/stop');
+            await adminFetch('/api/stop');
             showToast('Bot stopped', 'error');
         }
 
@@ -1126,11 +1128,7 @@
         }
 
         // Init
-        if (apiKey) {
-            showApp();
-        } else {
-            document.getElementById('loginOverlay').classList.add('active');
-        }
+        showApp();
     </script>
 </body>
 </html>
