@@ -829,7 +829,6 @@
             <div class="section-header">
                 <span class="section-title">Execution ledger</span>
                 <select id="tradeDate" class="btn" aria-label="Trade date (US Eastern)" onchange="filterTradeLogs()"><option value="all">All dates</option></select>
-                <button class="btn btn-ghost" onclick="clearLogs()">Clear</button>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -1246,10 +1245,6 @@
         function updateThemeLabel() {
             const current = document.documentElement.dataset.theme;
             document.getElementById('themeToggle').textContent = current === 'light' ? 'Dark theme' : 'Light theme';
-        }
-
-        function clearLogs() {
-            document.getElementById('tradeLogsTable').innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">Logs cleared</td></tr>';
         }
 
         // Toast notifications
