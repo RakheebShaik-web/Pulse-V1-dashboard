@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pulse V1 — Institutional Trading</title>
+    <meta name="description" content="Pulse V1 private-client portfolio and execution dashboard">
+    <title>Pulse V1 — Private Client Trading</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -144,6 +145,10 @@
         .btn-ghost:hover {
             background: var(--surface);
         }
+
+        .admin-only { display: none !important; }
+        body.admin-unlocked .admin-only { display: inline-flex !important; }
+        body.admin-unlocked th.admin-only, body.admin-unlocked td.admin-only { display: table-cell !important; }
 
         /* Login Modal */
         .login-overlay {
@@ -541,6 +546,41 @@
         .toast.error {
             border-color: var(--danger);
         }
+        /* Private-client visual system */
+        :root {
+            --bg: #080b0f; --surface: #10151b; --surface-hover: #151c24;
+            --border: #252d36; --text: #f0eee9; --text-muted: #89939e;
+            --accent: #c9b27c; --accent-glow: rgba(201,178,124,.18);
+            --success: #68b98a; --success-glow: rgba(104,185,138,.22);
+            --danger: #d47777; --danger-glow: rgba(212,119,119,.2); --warning: #c9b27c;
+        }
+        body { background: radial-gradient(circle at 78% -10%, rgba(75,91,106,.16), transparent 34rem), var(--bg); }
+        .container { padding: 28px 32px 44px; }
+        .header { padding: 12px 0 22px; margin-bottom: 32px; }
+        .logo, .btn, .market-status, .metric-card, .table-wrapper, .chart-container { border-radius: 4px; }
+        .brand-text h1, .section-title, .metric-value {
+            font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+            font-weight: 500;
+        }
+        .brand-text h1 { font-size: 20px; letter-spacing: -.4px; }
+        .brand-text p { letter-spacing: 1.5px; }
+        .btn { padding: 8px 13px; transition: background-color .2s ease, border-color .2s ease, transform .2s ease; }
+        .btn:active { transform: translateY(1px); }
+        .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .btn-primary { color: #111318; }
+        .btn-primary:hover { background: #ddc994; border-color: #ddc994; }
+        .market-status { padding: 16px 18px; margin-bottom: 30px; box-shadow: inset 0 1px rgba(255,255,255,.025); }
+        .metrics-grid { gap: 1px; margin-bottom: 36px; background: var(--border); border: 1px solid var(--border); }
+        .metric-card { border: 0; border-radius: 0; padding: 19px 18px 21px; }
+        .metric-label { text-transform: none; letter-spacing: .4px; margin-bottom: 9px; }
+        .metric-value { font-size: 24px; letter-spacing: -.7px; font-variant-numeric: tabular-nums; }
+        .section { margin-bottom: 38px; }
+        .section-header { margin-bottom: 14px; }
+        .section-title { font-size: 17px; text-transform: none; letter-spacing: -.2px; }
+        th { padding: 11px 14px; }
+        td { padding: 12px 14px; font-variant-numeric: tabular-nums; }
+        .chart-container { height: 220px; padding: 18px; }
+        @media (max-width: 768px) { .container { padding: 18px 16px 32px; } .header-actions { width: 100%; overflow-x: auto; } }
     </style>
 </head>
 <body>
@@ -574,15 +614,15 @@
                 </div>
                 <div class="brand-text">
                     <h1>Pulse V1</h1>
-                    <p>Institutional Trading</p>
+                    <p>Private Client Trading</p>
                 </div>
             </div>
             <div class="header-actions">
                 <span class="sound-toggle btn btn-ghost" id="soundToggle" onclick="toggleSound()">🔔</span>
                 <button class="btn btn-ghost" onclick="refresh()">⟳</button>
                 <button class="btn btn-ghost" id="adminButton" onclick="openAdminLogin()">Admin</button>
-                <button class="btn" onclick="startBot()">Start</button>
-                <button class="btn btn-danger" onclick="stopBot()">Stop</button>
+                <button class="btn admin-only" onclick="startBot()">Start</button>
+                <button class="btn btn-danger admin-only" onclick="stopBot()">Stop</button>
             </div>
         </header>
 
@@ -678,6 +718,10 @@
         <div class="section">
             <div class="section-header">
                 <span class="section-title">Open Positions & Levels</span>
+                <div class="admin-only">
+                    <button class="btn btn-ghost" onclick="cancelAllOrders()">Cancel Orders</button>
+                    <button class="btn btn-danger" onclick="closeAllPositions()">Close All Positions</button>
+                </div>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -692,10 +736,11 @@
                             <th>TP2</th>
                             <th>Current</th>
                             <th>P&L</th>
+                            <th class="admin-only">Admin</th>
                         </tr>
                     </thead>
                     <tbody id="openPositionsTable">
-                        <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No open positions</td></tr>
+                        <tr><td colspan="10" style="text-align: center; color: var(--text-muted);">No open positions</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -783,6 +828,7 @@
             .then(r => {
                 if (r.ok) {
                     apiKey = key;
+                    document.body.classList.add('admin-unlocked');
                     document.getElementById('apiKeyInput').value = '';
                     document.getElementById('adminButton').textContent = 'Admin unlocked';
                     showApp();
@@ -819,6 +865,7 @@
 
         function logout() {
             apiKey = '';
+            document.body.classList.remove('admin-unlocked');
             document.getElementById('adminButton').textContent = 'Admin';
         }
 
@@ -927,21 +974,23 @@
         function updateOpenPositions(positions) {
             const tbody = document.getElementById('openPositionsTable');
             if (!positions || positions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--text-muted);">No open positions</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align: center; color: var(--text-muted);">No open positions</td></tr>';
                 return;
             }
 
+            const money = value => Number.isFinite(Number(value)) ? '$' + Number(value).toFixed(2) : '—';
             tbody.innerHTML = positions.map(p => `
                 <tr>
                     <td><strong>${p.symbol}</strong></td>
                     <td><span class="badge badge-${p.side}">${p.side.toUpperCase()}</span></td>
                     <td>${p.remaining || p.size}</td>
-                    <td>$${p.entry.toFixed(2)}</td>
-                    <td>$${p.sl.toFixed(2)}</td>
-                    <td>$${p.tp1.toFixed(2)}</td>
-                    <td>$${p.tp2.toFixed(2)}</td>
-                    <td>$${p.current_price.toFixed(2)}</td>
+                    <td>${money(p.entry)}</td>
+                    <td>${money(p.sl)}</td>
+                    <td>${money(p.tp1)}</td>
+                    <td>${money(p.tp2)}</td>
+                    <td>${money(p.current_price)}</td>
                     <td class="${p.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}">${p.pnl >= 0 ? '+' : ''}$${p.pnl.toFixed(2)}</td>
+                    <td class="admin-only"><button class="btn btn-danger" onclick="closePosition('${p.symbol}')">Close</button></td>
                 </tr>
             `).join('');
         }
@@ -1084,6 +1133,27 @@
         async function stopBot() {
             await adminFetch('/api/stop');
             showToast('Bot stopped', 'error');
+        }
+
+        async function cancelAllOrders() {
+            if (!confirm('Cancel every open order? Existing positions will remain open.')) return;
+            await adminFetch('/api/cancel-all');
+            showToast('Order cancellation requested', 'success');
+            refresh();
+        }
+
+        async function closeAllPositions() {
+            if (!confirm('Close every open position and stop the bot?')) return;
+            await adminFetch('/api/close-all');
+            showToast('Close-all requested', 'error');
+            refresh();
+        }
+
+        async function closePosition(symbol) {
+            if (!confirm(`Close the entire ${symbol} position?`)) return;
+            await adminFetch(`/api/positions/${encodeURIComponent(symbol)}/close`);
+            showToast(`${symbol} close requested`, 'error');
+            refresh();
         }
 
         function toggleSound() {
