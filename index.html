@@ -36,21 +36,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        body.fullscreen {
-            overflow: hidden;
-        }
-
-        body.fullscreen .header,
-        body.fullscreen .footer {
-            display: none;
-        }
-
-        body.fullscreen .container {
-            padding-top: 16px;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -594,7 +579,6 @@
             </div>
             <div class="header-actions">
                 <span class="sound-toggle btn btn-ghost" id="soundToggle" onclick="toggleSound()">🔔</span>
-                <button class="btn btn-ghost" onclick="toggleFullscreen()">⛶</button>
                 <button class="btn btn-ghost" onclick="refresh()">⟳</button>
                 <button class="btn btn-ghost" id="adminButton" onclick="openAdminLogin()">Admin</button>
                 <button class="btn" onclick="startBot()">Start</button>
@@ -602,16 +586,17 @@
             </div>
         </header>
 
-        <!-- Market Status -->
+        <!-- Bot and market status -->
         <div class="market-status">
-            <div class="status-dot" id="marketDot"></div>
+            <div class="status-dot closed" id="botDot"></div>
             <div>
-                <div class="market-status-text" id="marketStatus">Market Open</div>
-                <div class="market-status-sub" id="marketTime"></div>
+                <div class="market-status-text" id="botStatus">Bot status loading</div>
+                <div class="market-status-sub" id="botDetail">Entry automation</div>
             </div>
             <div class="market-status-right">
-                <div class="status-label">Last updated</div>
-                <div class="status-value" id="lastUpdate">—</div>
+                <div class="status-label">Market</div>
+                <div class="status-value" id="marketStatus">Loading</div>
+                <div class="market-status-sub" id="marketTime">—</div>
             </div>
         </div>
 
@@ -879,20 +864,29 @@
                 ]);
 
                 updateDashboard({ status, positions, trades, closed, curve, clock, symbols, logs });
-                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
             } catch (e) {
                 console.error('Refresh failed:', e);
+                document.getElementById('botDot').className = 'status-dot closed';
+                document.getElementById('botStatus').textContent = 'Bot Unreachable';
+                document.getElementById('botDetail').textContent = 'Backend connection unavailable';
             }
         }
 
         function updateDashboard(data) {
             const { status, positions, trades, closed, curve, clock, symbols, logs } = data;
 
-            // Market status
-            const marketOpen = status.status === 'running' && clock.market_open;
-            document.getElementById('marketDot').className = 'status-dot' + (marketOpen ? '' : ' closed');
+            // Bot and market are independent states.
+            const botRunning = status.status === 'running';
+            document.getElementById('botDot').className = 'status-dot' + (botRunning ? '' : ' closed');
+            document.getElementById('botStatus').textContent = botRunning ? 'Bot Running' : 'Bot Stopped';
+            document.getElementById('botDetail').textContent = botRunning ? 'New entries enabled' : 'New entries disabled';
+
+            const marketOpen = Boolean(clock.is_open ?? clock.market_open);
             document.getElementById('marketStatus').textContent = marketOpen ? 'Market Open' : 'Market Closed';
-            document.getElementById('marketTime').textContent = clock.time + ' | ' + clock.date;
+            const marketTimestamp = clock.timestamp ? new Date(clock.timestamp) : new Date();
+            document.getElementById('marketTime').textContent = marketTimestamp.toLocaleString('en-US', {
+                timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'
+            });
 
             // Key metrics
             const totalPnl = closed.total_pnl || trades.total_pnl || 0;
@@ -1090,10 +1084,6 @@
         async function stopBot() {
             await adminFetch('/api/stop');
             showToast('Bot stopped', 'error');
-        }
-
-        function toggleFullscreen() {
-            document.body.classList.toggle('fullscreen');
         }
 
         function toggleSound() {
