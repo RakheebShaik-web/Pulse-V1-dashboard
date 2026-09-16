@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Pulse V1 private-client portfolio and execution dashboard">
-    <title>Pulse V1 — Private Client Trading</title>
+    <title>Pulse — Portfolio overview</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -670,6 +670,7 @@
             .symbol-section td { padding: 17px 12px; }
         }
     </style>
+    <link rel="stylesheet" href="investor.css">
 </head>
 <body>
     <!-- Login Overlay -->
@@ -701,8 +702,8 @@
                     </svg>
                 </div>
                 <div class="brand-text">
-                    <h1>PULSE / 01</h1>
-                    <p>Private execution desk</p>
+                    <h1>PULSE<span class="brand-divider">/</span>01</h1>
+                    <p>Portfolio intelligence</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -714,6 +715,10 @@
                 <button class="btn btn-danger admin-only" onclick="stopBot()">Stop</button>
             </div>
         </header>
+        <nav class="report-nav" aria-label="Report sections">
+            <a href="#overview">Overview</a><a href="#positions">Positions</a><a href="#attribution">Attribution</a><a href="#ledger">Trade history</a>
+            <span id="accountMode">Account mode loading</span>
+        </nav>
 
         <!-- Bot and market status -->
         <div class="market-status">
@@ -730,15 +735,15 @@
         </div>
 
         <!-- Key Metrics -->
-        <div class="portfolio-heading">
-            <div><span>Portfolio oversight</span><h2>Today’s mandate</h2></div>
-            <p>Live account, execution and realized performance</p>
+        <div class="portfolio-heading" id="overview">
+            <div><span>Investment report <span class="report-number">01 / OVERVIEW</span></span><h2>Portfolio overview<span class="heading-period">.</span></h2></div>
+            <p>US equities<br><span id="reportAsOf">Awaiting account update</span></p>
         </div>
         <div class="metrics-grid" id="metricsGrid">
             <div class="metric-card">
-                <div class="metric-label">Total P&L</div>
+                <div class="metric-label">Session P&amp;L</div>
                 <div class="metric-value" id="totalPnl">$0.00</div>
-                <div class="metric-sub">Realized</div>
+                <div class="metric-sub">Reported by trading service · USD</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Win Rate</div>
@@ -761,7 +766,7 @@
                 <div class="metric-sub">Active</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Portfolio Value</div>
+                <div class="metric-label">Account equity <span class="currency-label">USD</span></div>
                 <div class="metric-value" id="portfolioValue">$0.00</div>
                 <div class="metric-sub" id="buyingPower"></div>
             </div>
@@ -810,7 +815,7 @@
 
         </div>
         <!-- Open Positions -->
-        <div class="section">
+        <div class="section" id="positions">
             <div class="section-header">
                 <span class="section-title">Live positions</span>
                 <div class="admin-only">
@@ -842,7 +847,7 @@
         </div>
 
         <!-- By Symbol -->
-        <div class="section symbol-section">
+        <div class="section symbol-section" id="attribution">
             <div class="section-header">
                 <span class="section-title">By Symbol</span>
             </div>
@@ -868,7 +873,7 @@
         <!-- Trade Logs -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Execution ledger</span>
+                <span class="section-title" id="ledger">Trade history <small>US Eastern time</small></span>
                 <select id="tradeDate" class="btn" aria-label="Trade date (US Eastern)" onchange="filterTradeLogs()"><option value="all">All dates</option></select>
             </div>
             <div class="table-wrapper">
@@ -1022,6 +1027,8 @@
 
         function updateDashboard(data) {
             const { status, positions, trades, closed, curve, clock, symbols, logs } = data;
+            document.getElementById('accountMode').textContent = status.mode === 'paper' ? 'PAPER ACCOUNT / SIMULATED' : status.mode === 'live' ? 'LIVE ACCOUNT' : 'ACCOUNT MODE UNKNOWN';
+            document.getElementById('reportAsOf').textContent = 'Updated ' + new Date().toLocaleString('en-US', {timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'});
 
             // Bot and market are independent states.
             const botRunning = status.status === 'running';
