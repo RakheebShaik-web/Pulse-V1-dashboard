@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Pulse V1 private-client portfolio and execution dashboard">
-    <title>Pulse — Portfolio overview</title>
+    <title>Pulse — Your trading account</title>
     <style>
         :root {
             --bg: #0a0a0a;
@@ -703,7 +703,7 @@
                 </div>
                 <div class="brand-text">
                     <h1>PULSE<span class="brand-divider">/</span>01</h1>
-                    <p>Portfolio intelligence</p>
+                    <p>Your trading account</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -716,7 +716,7 @@
             </div>
         </header>
         <nav class="report-nav" aria-label="Report sections">
-            <a href="#overview">Overview</a><a href="#positions">Positions</a><a href="#attribution">Attribution</a><a href="#ledger">Trade history</a>
+            <a href="#overview">Today</a><a href="#positions">Open positions</a><a href="#attribution">Results by stock</a><a href="#ledger">Trade history</a>
             <span id="accountMode">Account mode loading</span>
         </nav>
 
@@ -736,14 +736,14 @@
 
         <!-- Key Metrics -->
         <div class="portfolio-heading" id="overview">
-            <div><span>Investment report <span class="report-number">01 / OVERVIEW</span></span><h2>Portfolio overview<span class="heading-period">.</span></h2></div>
+            <div><span>Pulse / Daily summary</span><h2>Today’s results</h2></div>
             <p>US equities<br><span id="reportAsOf">Awaiting account update</span></p>
         </div>
         <div class="metrics-grid" id="metricsGrid">
             <div class="metric-card">
                 <div class="metric-label">Session P&amp;L</div>
                 <div class="metric-value" id="totalPnl">$0.00</div>
-                <div class="metric-sub">Reported by trading service · USD</div>
+                <div class="metric-sub">Profit and loss from recorded exits</div>
             </div>
             <div class="metric-card">
                 <div class="metric-label">Win Rate</div>
@@ -766,7 +766,7 @@
                 <div class="metric-sub">Active</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Account equity <span class="currency-label">USD</span></div>
+                <div class="metric-label">Account value <span class="currency-label">USD</span></div>
                 <div class="metric-value" id="portfolioValue">$0.00</div>
                 <div class="metric-sub" id="buyingPower"></div>
             </div>
@@ -776,7 +776,7 @@
         <!-- Two-Target Exit Plan -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Exit discipline</span>
+                <span class="section-title">How trades ended</span>
             </div>
             <div class="metrics-grid exit-metrics">
                 <div class="metric-card">
@@ -805,7 +805,7 @@
         <!-- PnL Curve -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Intraday realized P&amp;L</span>
+                <span class="section-title">Profit and loss through the day</span>
                 <span style="font-size: 10px; color: var(--text-muted);" id="pnlCurveRange">—</span>
             </div>
             <div class="chart-container">
@@ -898,7 +898,7 @@
 
         <!-- Footer -->
         <div class="footer">
-            <span>Pulse / 01 — Private execution desk</span>
+            <span>Pulse — All trade times are US Eastern</span>
             <span> | </span>
             <a href="#" onclick="logout()">Lock admin</a>
         </div>
@@ -1027,7 +1027,7 @@
 
         function updateDashboard(data) {
             const { status, positions, trades, closed, curve, clock, symbols, logs } = data;
-            document.getElementById('accountMode').textContent = status.mode === 'paper' ? 'PAPER ACCOUNT / SIMULATED' : status.mode === 'live' ? 'LIVE ACCOUNT' : 'ACCOUNT MODE UNKNOWN';
+            document.getElementById('accountMode').textContent = status.mode === 'paper' ? 'Paper trading · No real money' : status.mode === 'live' ? 'Live trading · Real money' : 'Account type unavailable';
             document.getElementById('reportAsOf').textContent = 'Updated ' + new Date().toLocaleString('en-US', {timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'});
 
             // Bot and market are independent states.
