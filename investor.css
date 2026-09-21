@@ -44,4 +44,47 @@ td[colspan] { padding:32px 16px; border-top:1px solid var(--border); }.sample-co
  .container { padding:22px 18px; }.header { gap:18px; }.header-actions { gap:3px; }.report-nav { gap:20px; flex-wrap:wrap; }.report-nav span { width:100%; margin:0; }.market-status { margin-bottom:30px; }.market-status-right { display:block; }.portfolio-heading h2 { font-size:33px; }.portfolio-heading p { text-align:left; }.report-number { margin-left:12px; }
  #metricsGrid { grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-rows:auto; }#metricsGrid .metric-card:nth-child(n) { grid-column:auto; grid-row:auto; border-right:0; padding:20px 10px; }#metricsGrid .metric-card:nth-child(6) { grid-column:1 / -1; grid-row:1; margin:0 0 20px; padding:26px; }#metricsGrid .metric-card:first-child { grid-column:1 / -1; grid-row:2; padding-left:0; }#metricsGrid #portfolioValue { font-size:43px; }.performance-layout { grid-template-columns:1fr; gap:24px; }.table-wrapper table { min-width:620px; }.section-header .admin-only { width:100%; }
 }
+/* Focused executive pass: prioritize daily result, account state and live exposure. */
+:root { --bg:#0b100f; --surface:#121917; --surface-hover:#18221f; --border:#28332f; --text:#f2f0e9; --text-muted:#8f9b94; --accent:#c9b57f; --success:#78c393; --danger:#e0847e; --font-mono:'Cascadia Mono',Consolas,'SF Mono',monospace; }
+html[data-theme="light"] { --bg:#f3f0e8; --surface:#fbfaf6; --surface-hover:#e9ebe4; --border:#d0d4c9; --text:#17231e; --text-muted:#667169; --accent:#776337; --success:#28734a; --danger:#a44940; }
+.container { max-width:1520px; padding:26px 48px 42px; }
+.header { padding-bottom:20px; }
+.brand-text h1 { font-size:21px; letter-spacing:.11em; }
+.brand-divider { color:var(--accent); margin:0 10px; }
+.report-nav { gap:28px; padding:14px 0; }
+.report-nav a { font-size:11px; padding:5px 0; border-bottom:1px solid transparent; }
+.report-nav a:first-child { border-color:var(--accent); }
+.market-status { padding:12px 14px; margin:18px 0 38px; border:1px solid var(--border); background:var(--surface); }
+.market-status-text { font-weight:600; }
+.portfolio-heading { margin-bottom:18px; }
+.portfolio-heading>div>span { font-size:9px; letter-spacing:.15em; }
+.portfolio-heading h2 { margin-top:7px; font-size:32px; font-weight:520; }
+#metricsGrid { grid-template-columns:1.35fr repeat(4,1fr) 1.35fr; grid-template-rows:auto; background:var(--surface); border:1px solid var(--border); margin-bottom:40px; }
+#metricsGrid .metric-card:nth-child(n) { grid-column:auto; grid-row:auto; margin:0; padding:20px 18px 22px; border:0; border-right:1px solid var(--border); background:transparent; display:block; }
+#metricsGrid .metric-card:last-child { border-right:0; background:rgba(255,255,255,.018); }
+#metricsGrid .metric-card:first-child { background:rgba(201,181,127,.055); }
+#metricsGrid #portfolioValue { margin:0; font-family:var(--font-mono); font-size:clamp(21px,2vw,29px); font-weight:520; }
+#metricsGrid .metric-card:first-child .metric-value { font-size:29px; }
+.performance-layout { grid-template-columns:.9fr 2.1fr; gap:46px; padding-bottom:34px; margin-bottom:40px; }
+.section-title { font-size:15px; font-weight:620; }
+.section-title small { font-size:9px; letter-spacing:.01em; }
+.table-wrapper, html[data-theme="light"] .table-wrapper { border:1px solid var(--border); background:rgba(18,25,23,.42); }
+html[data-theme="light"] .table-wrapper { background:rgba(251,250,246,.72); }
+th { padding:12px 14px; background:rgba(255,255,255,.018); }
+td { padding:15px 14px; }
+th:first-child,td:first-child { padding-left:16px; }
+th:last-child,td:last-child { padding-right:16px; }
+tbody tr:hover td { background:rgba(201,181,127,.045); }
+@media(max-width:1050px) {
+  #metricsGrid { grid-template-columns:repeat(3,1fr); }
+  #metricsGrid .metric-card:nth-child(n) { border-bottom:1px solid var(--border); }
+  #metricsGrid .metric-card:nth-child(3n) { border-right:0; }
+}
+@media(max-width:768px) {
+  .container { padding:20px 16px 32px; }
+  #metricsGrid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #metricsGrid .metric-card:nth-child(n) { grid-column:auto; grid-row:auto; margin:0; padding:18px 12px; border-right:1px solid var(--border); }
+  #metricsGrid .metric-card:nth-child(even) { border-right:0; }
+  .performance-layout { grid-template-columns:1fr; gap:26px; }
+}
 @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }

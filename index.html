@@ -703,7 +703,7 @@
                 </div>
                 <div class="brand-text">
                     <h1>PULSE<span class="brand-divider">/</span>01</h1>
-                    <p>Your trading account</p>
+                    <p>Strategy monitor</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -716,7 +716,7 @@
             </div>
         </header>
         <nav class="report-nav" aria-label="Report sections">
-            <a href="#overview">Today</a><a href="#positions">Open positions</a><a href="#attribution">Results by stock</a><a href="#ledger">Trade history</a>
+            <a href="#overview">Daily brief</a><a href="#positions">Live positions</a><a href="#attribution">Stock results</a><a href="#ledger">Trade ledger</a>
             <span id="accountMode">Account mode loading</span>
         </nav>
 
@@ -736,7 +736,7 @@
 
         <!-- Key Metrics -->
         <div class="portfolio-heading" id="overview">
-            <div><span>Pulse / Daily summary</span><h2>Today’s results</h2></div>
+            <div><span>Daily account brief</span><h2>Today, at a glance</h2></div>
             <p>US equities<br><span id="reportAsOf">Awaiting account update</span></p>
         </div>
         <div class="metrics-grid" id="metricsGrid">
@@ -746,22 +746,22 @@
                 <div class="metric-sub">Profit and loss from recorded exits</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Win Rate</div>
+                <div class="metric-label">Win rate</div>
                 <div class="metric-value" id="winRate">0%</div>
                 <div class="metric-sub" id="winLoss">0 / 0</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Closed Positions</div>
+                <div class="metric-label">Trades closed</div>
                 <div class="metric-value" id="closedCount">0</div>
                 <div class="metric-sub">Total trades</div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Avg P&L / Trade</div>
+                <div class="metric-label">Average result</div>
                 <div class="metric-value" id="avgPnl">$0.00</div>
                 <div class="metric-sub" id="avgWinLoss"></div>
             </div>
             <div class="metric-card">
-                <div class="metric-label">Open Positions</div>
+                <div class="metric-label">Positions open</div>
                 <div class="metric-value" id="openCount">0</div>
                 <div class="metric-sub">Active</div>
             </div>
@@ -776,7 +776,7 @@
         <!-- Two-Target Exit Plan -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">How trades ended</span>
+                <span class="section-title">Exit quality</span>
             </div>
             <div class="metrics-grid exit-metrics">
                 <div class="metric-card">
@@ -805,7 +805,7 @@
         <!-- PnL Curve -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title">Profit and loss through the day</span>
+                <span class="section-title">Realized P&amp;L through the day</span>
                 <span style="font-size: 10px; color: var(--text-muted);" id="pnlCurveRange">—</span>
             </div>
             <div class="chart-container">
@@ -817,7 +817,7 @@
         <!-- Open Positions -->
         <div class="section" id="positions">
             <div class="section-header">
-                <span class="section-title">Live positions</span>
+                <span class="section-title">Live positions <small>Current exposure and protective levels</small></span>
                 <div class="admin-only">
                     <button class="btn btn-ghost" onclick="cancelAllOrders()">Cancel Orders</button>
                     <button class="btn btn-danger" onclick="closeAllPositions()">Close All Positions</button>
@@ -849,7 +849,7 @@
         <!-- By Symbol -->
         <div class="section symbol-section" id="attribution">
             <div class="section-header">
-                <span class="section-title">Results by stock <small>Matches the selected trade date</small></span>
+                <span class="section-title">Stock results <small>Realized results for the selected trading day</small></span>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -873,7 +873,7 @@
         <!-- Trade Logs -->
         <div class="section">
             <div class="section-header">
-                <span class="section-title" id="ledger">Trade history <small>US Eastern time</small></span>
+                <span class="section-title" id="ledger">Trade ledger <small>Every execution · US Eastern time</small></span>
                 <select id="tradeDate" class="btn" aria-label="Trade date (US Eastern)" onchange="filterTradeLogs()"><option value="">Today</option></select>
             </div>
             <div class="table-wrapper">
