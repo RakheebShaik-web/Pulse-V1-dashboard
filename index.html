@@ -849,7 +849,7 @@
         <!-- By Symbol -->
         <div class="section symbol-section" id="attribution">
             <div class="section-header">
-                <span class="section-title">By Symbol</span>
+                <span class="section-title">Results by stock <small>Matches the selected trade date</small></span>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -874,7 +874,7 @@
         <div class="section">
             <div class="section-header">
                 <span class="section-title" id="ledger">Trade history <small>US Eastern time</small></span>
-                <select id="tradeDate" class="btn" aria-label="Trade date (US Eastern)" onchange="filterTradeLogs()"><option value="all">All dates</option></select>
+                <select id="tradeDate" class="btn" aria-label="Trade date (US Eastern)" onchange="filterTradeLogs()"><option value="">Today</option></select>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -1069,8 +1069,8 @@
             // Open positions table
             updateOpenPositions(positions);
 
-            // Symbol stats
-            updateSymbolStats(symbols);
+            // Keep the API's all-time rollup for the explicit "All dates" view.
+            allSymbolStats = symbols || [];
 
             // Trade logs
             updateTradeLogs(logs);
@@ -1104,6 +1104,7 @@
         }
 
         let symbolRows = [];
+        let allSymbolStats = [];
         let symbolSortDescending = true;
         function toggleSymbolSort() {
             symbolSortDescending = !symbolSortDescending;
@@ -1132,19 +1133,48 @@
         }
 
         let allTradeLogs = [];
+        function easternDate() {
+            const parts = new Intl.DateTimeFormat('en-US', {
+                timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit'
+            }).formatToParts(new Date());
+            const value = Object.fromEntries(parts.map(part => [part.type, part.value]));
+            return `${value.year}-${value.month}-${value.day}`;
+        }
+
+        function symbolStatsFromLogs(logs) {
+            const stats = new Map();
+            logs.filter(log => log.pnl !== null && log.pnl !== undefined && log.pnl !== '' && Number.isFinite(Number(log.pnl))).forEach(log => {
+                const symbol = log.symbol || 'Unknown';
+                const pnl = Number(log.pnl);
+                const row = stats.get(symbol) || { symbol, trades: 0, wins: 0, losses: 0, pnl: 0 };
+                row.trades += 1;
+                row[pnl > 0 ? 'wins' : 'losses'] += 1;
+                row.pnl += pnl;
+                stats.set(symbol, row);
+            });
+            return [...stats.values()].map(row => ({
+                ...row, pnl: Number(row.pnl.toFixed(2)), win_rate: row.wins / row.trades * 100
+            }));
+        }
+
         function updateTradeLogs(logs) {
             allTradeLogs = logs || [];
             const select = document.getElementById('tradeDate');
             const selected = select.value;
+            const today = easternDate();
             const dates = [...new Set(allTradeLogs.map(l => (l.time_et || l.time || '').slice(0, 10)).filter(Boolean))].sort().reverse();
-            select.replaceChildren(new Option('All dates', 'all'), ...dates.map(d => new Option(d, d)));
-            if (dates.includes(selected)) select.value = selected;
+            const priorDates = dates.filter(date => date !== today);
+            select.replaceChildren(new Option(`Today — ${today}`, today),
+                ...priorDates.map(date => new Option(date, date)), new Option('All dates', 'all'));
+            select.value = selected === 'all' || dates.includes(selected) ? selected : today;
             filterTradeLogs();
         }
 
         function filterTradeLogs() {
             const selected = document.getElementById('tradeDate').value;
-            renderTradeLogs(allTradeLogs.filter(l => selected === 'all' || (l.time_et || l.time || '').startsWith(selected)));
+            const visibleLogs = allTradeLogs.filter(l => selected === 'all' || (l.time_et || l.time || '').startsWith(selected));
+            renderTradeLogs(visibleLogs);
+            updateSymbolStats(selected === 'all' ? allSymbolStats : symbolStatsFromLogs(visibleLogs));
         }
 
         function renderTradeLogs(logs) {
